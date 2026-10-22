@@ -3,6 +3,9 @@ dist/
 data-raw/
 .env
 next_ai_errormonkeys/
+__pycache__/
+*.pyc
+
 # Logs
 logs
 *.log

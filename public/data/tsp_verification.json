@@ -1,0 +1,78 @@
+{
+  "total_tested": 50,
+  "matched": 50,
+  "match_percentage": 100.0,
+  "readme_quote": "Matched on 50 of 50 orders",
+  "sample_verifications": [
+    {
+      "order_index": 1,
+      "item_count": 7,
+      "brute_force_meters": 72.5,
+      "dp_meters": 72.5,
+      "matched": true
+    },
+    {
+      "order_index": 2,
+      "item_count": 5,
+      "brute_force_meters": 69.5,
+      "dp_meters": 69.5,
+      "matched": true
+    },
+    {
+      "order_index": 3,
+      "item_count": 7,
+      "brute_force_meters": 96.5,
+      "dp_meters": 96.5,
+      "matched": true
+    },
+    {
+      "order_index": 4,
+      "item_count": 5,
+      "brute_force_meters": 49.0,
+      "dp_meters": 49.0,
+      "matched": true
+    },
+    {
+      "order_index": 5,
+      "item_count": 2,
+      "brute_force_meters": 59.0,
+      "dp_meters": 59.0,
+      "matched": true
+    },
+    {
+      "order_index": 6,
+      "item_count": 2,
+      "brute_force_meters": 53.0,
+      "dp_meters": 53.0,
+      "matched": true
+    },
+    {
+      "order_index": 7,
+      "item_count": 5,
+      "brute_force_meters": 56.0,
+      "dp_meters": 56.0,
+      "matched": true
+    },
+    {
+      "order_index": 8,
+      "item_count": 2,
+      "brute_force_meters": 35.0,
+      "dp_meters": 35.0,
+      "matched": true
+    },
+    {
+      "order_index": 9,
+      "item_count": 7,
+      "brute_force_meters": 52.0,
+      "dp_meters": 52.0,
+      "matched": true
+    },
+    {
+      "order_index": 10,
+      "item_count": 7,
+      "brute_force_meters": 107.0,
+      "dp_meters": 107.0,
+      "matched": true
+    }
+  ]
+}
