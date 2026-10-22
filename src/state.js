@@ -238,7 +238,7 @@ class StateStore {
    * @param {Array} [data.baseline] - Automated baseline assignment array
    * @param {string} [data.month] - 'base' or 'YYYY-MM'
    */
-  initFromData({ originalAssignment, baseline = null, month = 'base' } = {}) {
+  initFromData({ layout = null, products = null, orders = null, originalAssignment, baseline = null, month = 'base' } = {}) {
     if (!Array.isArray(originalAssignment)) {
       throw new TypeError('[Store] originalAssignment must be an Array where originalAssignment[productId] = slotId');
     }
@@ -249,6 +249,9 @@ class StateStore {
 
     this.state = {
       ...this.state,
+      layout: layout || this.state.layout,
+      products: products || this.state.products,
+      orders: orders || this.state.orders,
       originalAssignment: frozenOriginal,
       assignment: [...frozenOriginal], // Fresh mutable copy for player
       baseline: safeBaseline,
@@ -259,7 +262,10 @@ class StateStore {
       uiStatus: {
         ...this.state.uiStatus,
         status: 'ready',
-        message: `Loaded dataset successfully for period '${month}'.`
+        message: `Loaded dataset successfully for period '${month}'.`,
+        isMockDataActive: false,
+        engineConnected: true,
+        sceneConnected: true
       }
     };
 
@@ -284,8 +290,9 @@ class StateStore {
   }
 
   getProductById(productId) {
-    if (this.state.products && this.state.products[productId]) {
-      return this.state.products[productId];
+    if (Array.isArray(this.state.products)) {
+      const p = this.state.products.find(item => item.id === productId) || this.state.products[productId];
+      if (p) return p;
     }
     // Match attributes from mock products:
     // Product 1, 3, 5 are heavy; Product 6, 9 are fragile; Product 99 is hazard
@@ -558,6 +565,7 @@ class StateStore {
     const orig = typeof originalDistance === 'number' ? originalDistance : (this.state.metrics.originalDistance || playerDistance);
     const savings = orig > 0 ? Math.round(((orig - playerDistance) / orig) * 1000) / 10 : 0.0;
 
+    const { visitsBySlot, regretList } = evalResult;
     const newMetrics = {
       isEvaluated: true,
       isMockData: false,
@@ -572,14 +580,20 @@ class StateStore {
     this.state = {
       ...this.state,
       metrics: newMetrics,
+      visitsBySlot: visitsBySlot || this.state.visitsBySlot,
+      regretList: regretList || this.state.regretList,
       uiStatus: {
         ...this.state.uiStatus,
         status: 'ready',
+        isMockDataActive: false,
+        engineConnected: true,
+        sceneConnected: true,
         message: `Evaluation completed (${playerDistance.toFixed(1)} m).`
       }
     };
 
     this.emit('run-finished', newMetrics);
+    this.notifySubscribers();
   }
 
   // =========================================================================
