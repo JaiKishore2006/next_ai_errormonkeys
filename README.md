@@ -41,7 +41,7 @@ documented when their implementations are integrated.
 
 ## Deployment URL
 
-Pending initial Vercel deployment.
+[https://nextaierrormonkeys.vercel.app](https://nextaierrormonkeys.vercel.app)
 
 ## Data Attribution and Licence
 
