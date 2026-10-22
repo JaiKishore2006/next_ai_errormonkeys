@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import gsap from 'gsap'
 import { PickerRunner } from './picker.js'
+import { fireConfetti } from './confetti.js'
 import {
   playClickSound,
   playSwapSuccessSound,
@@ -40,6 +42,14 @@ const PALETTE = {
   lane: new THREE.Color(0x4a5568)
 }
 
+// Method route colors
+const METHOD_COLORS = {
+  sshape: 0x38bdf8,     // Cyan
+  return: 0xfb923c,     // Orange
+  'largest-gap': 0xc084fc, // Purple
+  optimal: 0x34d399     // Emerald
+}
+
 // ==========================================
 // SCENE STATE
 // ==========================================
@@ -54,9 +64,10 @@ let pointerMoveHandler = null
 let clickHandler = null
 
 let instancedRacks = null
+let dockMesh = null
+let dockMaterial = null
 let selectionBox = null
 let routeLine = null
-let ghostRouteLine = null
 
 let playerPicker = null
 let ghostPicker = null
@@ -68,6 +79,7 @@ const slotAssignments = new Map()
 // Color mode: 'default' | 'heat' | 'zones' | 'regret'
 let activeColorMode = 'default'
 let colorModeData = {}
+let activeRoutingMethod = 'sshape'
 
 // Highlights: slotId -> 'illegal' | 'hint'
 const highlightedSlots = new Map()
@@ -84,8 +96,9 @@ let dockLabelEl = null
 let verificationBadgeEl = null
 let audioButtonEl = null
 let debugStatsEl = null
+const regretLabels = []
 
-// Frame counter for performance
+// Performance tracking
 let lastFrameTime = performance.now()
 let frameCount = 0
 let fps = 60
@@ -106,7 +119,6 @@ function buildWarehouseSlots() {
         const bayZ = 2.25 + 1.5 * bay
 
         for (let level = 0; level < LEVELS; level++) {
-          // Deterministic slot index: 0..239
           const slotId = aisle * 40 + sideIdx * 20 + bay * 2 + level
           const rackY = level === 0 ? 0.5 : 1.7
 
@@ -159,7 +171,6 @@ export function on(eventName, callback) {
 // COLOR COMPUTATION
 // ==========================================
 function lerp3Color(val, c1, c2, c3) {
-  // val between 0 and 1
   const color = new THREE.Color()
   if (val <= 0.5) {
     color.copy(c1).lerp(c2, val * 2)
@@ -174,7 +185,7 @@ const HEAT_YELLOW = new THREE.Color(0xf6e05e)
 const HEAT_RED = new THREE.Color(0xe53e3e)
 
 function computeSlotColor(slotId, time = 0) {
-  // 1. Highlight overrides (selection, illegal, hint, flashing)
+  // Overrides: flashing, illegal, hint, selected
   if (flashingSlotId === slotId) {
     return PALETTE.selected
   }
@@ -193,7 +204,7 @@ function computeSlotColor(slotId, time = 0) {
   const slot = SLOTS[slotId]
   const product = slotAssignments.get(slotId)
 
-  // 2. Regret Mode
+  // Regret Mode
   if (activeColorMode === 'regret') {
     const regretList = Array.isArray(colorModeData) ? colorModeData : colorModeData?.regretList || []
     const regretEntry = regretList.find(r => r.productId === product?.id || r.slotId === slotId)
@@ -203,7 +214,7 @@ function computeSlotColor(slotId, time = 0) {
     }
   }
 
-  // 3. Heatmap Mode
+  // Heatmap Mode
   if (activeColorMode === 'heat') {
     const visits = (typeof colorModeData === 'object' ? colorModeData[slotId] : 0) || 0
     const maxVisits = colorModeData?._max || 50
@@ -211,14 +222,14 @@ function computeSlotColor(slotId, time = 0) {
     return lerp3Color(normalized, HEAT_BLUE, HEAT_YELLOW, HEAT_RED)
   }
 
-  // 4. Zones Mode
+  // Zones Mode
   if (activeColorMode === 'zones') {
     if (slot.zone === 'hazard') return PALETTE.hazard
     if (slot.zone === 'fragile') return PALETTE.fragile
     return PALETTE.normal
   }
 
-  // 5. Default Mode: Product category / properties
+  // Default Mode
   if (!product) {
     return PALETTE.empty
   }
@@ -241,6 +252,15 @@ function refreshAllColors(time = 0) {
 // ==========================================
 // SCENE INITIALIZATION (initScene)
 // ==========================================
+function isWebGLAvailable() {
+  try {
+    const canvas = document.createElement('canvas')
+    return Boolean(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')))
+  } catch {
+    return false
+  }
+}
+
 export function initScene(container, layout = null) {
   if (!container) {
     throw new Error('initScene requires a valid DOM container')
@@ -249,22 +269,33 @@ export function initScene(container, layout = null) {
   disposeScene()
   containerRef = container
 
+  // WebGL Fallback Check
+  if (!isWebGLAvailable()) {
+    container.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #f8fafc; background: #0f172a; text-align: center; padding: 20px;">
+        <h2 style="color: #ef4444; margin-bottom: 8px;">WebGL Not Supported</h2>
+        <p style="color: #94a3b8; max-width: 400px;">Your browser or graphics driver does not have WebGL enabled. Please enable hardware acceleration in your browser settings to run the 3D Picking Floor.</p>
+      </div>
+    `
+    return null
+  }
+
   // Create Three.js Scene
   scene = new THREE.Scene()
-  scene.background = new THREE.Color('#0f172a') // Slate dark blue
+  scene.background = new THREE.Color('#0f172a')
 
   const width = Math.max(container.clientWidth, 600)
   const height = Math.max(container.clientHeight, 400)
 
-  // Camera: Perspective with clear viewing angle
+  // Camera
   camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000)
-  setCameraPreset('angled')
+  camera.position.set(14, 22, 28)
 
-  // Renderer: Antialias off, clamped pixel ratio for 60fps on integrated graphics
+  // Renderer
   renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
   renderer.setSize(width, height)
-  renderer.shadowMap.enabled = false // Shadows off per contract for performance
+  renderer.shadowMap.enabled = false // Shadows off for performance
 
   container.innerHTML = ''
   container.style.position = 'relative'
@@ -274,12 +305,12 @@ export function initScene(container, layout = null) {
   controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
   controls.dampingFactor = 0.08
-  controls.target.set(14, 0, 9) // Centre of warehouse (aisle range 3-28, z range 0-18)
-  controls.maxPolarAngle = Math.PI / 2 - 0.05 // Prevent going under the floor
+  controls.target.set(14, 0, 9)
+  controls.maxPolarAngle = Math.PI / 2 - 0.05
   controls.minDistance = 5
   controls.maxDistance = 75
 
-  // Lighting: Hemisphere + Directional
+  // Lights
   const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334155, 1.8)
   hemiLight.position.set(14, 25, 9)
   scene.add(hemiLight)
@@ -294,7 +325,7 @@ export function initScene(container, layout = null) {
   // Instanced Racks (240 slots)
   buildInstancedRacks(scene)
 
-  // Structural posts / upright frames
+  // Structural upright post frames
   buildRackStructuralPosts(scene)
 
   // Selection outline indicator
@@ -315,13 +346,20 @@ export function initScene(container, layout = null) {
     isGhost: true
   })
 
-  // Setup DOM Tooltip, Labels & HUD
+  // Setup DOM Tooltip, Labels, Badges & Audio Button
   setupOverlays(container)
 
   // Setup Interaction Handlers
   setupInteractions()
 
-  // Setup Resize Listener
+  // Setup Confetti on run-finished with 3 stars
+  on('run-finished', ({ stars }) => {
+    if (stars === 3 || stars === true) {
+      fireConfetti(120)
+    }
+  })
+
+  // Resize Listener
   resizeHandler = () => {
     if (!renderer || !camera || !containerRef) return
     const w = Math.max(containerRef.clientWidth, 300)
@@ -332,7 +370,7 @@ export function initScene(container, layout = null) {
   }
   window.addEventListener('resize', resizeHandler)
 
-  // Animation Loop
+  // Main Render & Animation Loop
   let lastTime = performance.now()
   function animate(now) {
     animFrameId = requestAnimationFrame(animate)
@@ -340,10 +378,19 @@ export function initScene(container, layout = null) {
     const deltaSec = Math.min((now - lastTime) / 1000, 0.1)
     lastTime = now
 
-    // Update controls
     controls.update()
 
-    // Flashing slot timer
+    // Dock light subtle blinking idle animation
+    if (dockMaterial) {
+      dockMaterial.emissiveIntensity = 0.25 + 0.25 * Math.sin(now * 0.003)
+    }
+
+    // Picker subtle idle breathing and head turns when not actively moving
+    if (playerPicker && !replayActive) {
+      playerPicker.updateIdle(now * 0.001)
+    }
+
+    // Pick pause slot flashing timer
     if (flashingSlotTimer > 0) {
       flashingSlotTimer -= deltaSec
       if (flashingSlotTimer <= 0) {
@@ -356,6 +403,9 @@ export function initScene(container, layout = null) {
     if (activeColorMode === 'regret' || highlightedSlots.size > 0) {
       refreshAllColors(now * 0.001)
     }
+
+    // Update floating regret score label positions
+    updateRegretLabelPositions()
 
     // FPS calculation for ?debug=1
     frameCount++
@@ -379,7 +429,6 @@ export function initScene(container, layout = null) {
 // SCENE COMPONENTS BUILDERS
 // ==========================================
 function buildFloor(targetScene) {
-  // Main warehouse concrete floor
   const floorGeom = new THREE.PlaneGeometry(38, 28)
   const floorMat = new THREE.MeshStandardMaterial({
     color: PALETTE.floor,
@@ -390,7 +439,6 @@ function buildFloor(targetScene) {
   floor.position.set(15, -0.05, 9)
   targetScene.add(floor)
 
-  // Front cross-aisle (z = 0)
   const frontCrossGeom = new THREE.PlaneGeometry(32, 2.5)
   const crossMat = new THREE.MeshBasicMaterial({ color: PALETTE.crossAisle })
   const frontCross = new THREE.Mesh(frontCrossGeom, crossMat)
@@ -398,13 +446,11 @@ function buildFloor(targetScene) {
   frontCross.position.set(15, -0.04, 0)
   targetScene.add(frontCross)
 
-  // Back cross-aisle (z = 18)
   const backCross = new THREE.Mesh(frontCrossGeom, crossMat)
   backCross.rotation.x = -Math.PI / 2
   backCross.position.set(15, -0.04, 18)
   targetScene.add(backCross)
 
-  // Aisle guide lines on floor
   const lineMat = new THREE.MeshBasicMaterial({ color: 0x334155 })
   for (const ax of AISLE_X) {
     const laneGeom = new THREE.PlaneGeometry(0.12, 18)
@@ -416,17 +462,16 @@ function buildFloor(targetScene) {
 
   // Packing Dock at (0, 0)
   const dockGeom = new THREE.BoxGeometry(2.8, 0.1, 2.8)
-  const dockMat = new THREE.MeshStandardMaterial({
+  dockMaterial = new THREE.MeshStandardMaterial({
     color: PALETTE.dock,
     roughness: 0.5,
     emissive: 0xd97706,
     emissiveIntensity: 0.3
   })
-  const dock = new THREE.Mesh(dockGeom, dockMat)
-  dock.position.set(0, 0.05, 0)
-  targetScene.add(dock)
+  dockMesh = new THREE.Mesh(dockGeom, dockMaterial)
+  dockMesh.position.set(0, 0.05, 0)
+  targetScene.add(dockMesh)
 
-  // Safety stripes border around dock
   const borderGeom = new THREE.BoxGeometry(3.0, 0.02, 3.0)
   const borderMat = new THREE.MeshBasicMaterial({ color: 0x1f2937 })
   const border = new THREE.Mesh(borderGeom, borderMat)
@@ -444,9 +489,7 @@ function buildInstancedRacks(targetScene) {
   instancedRacks = new THREE.InstancedMesh(geom, mat, TOTAL_SLOTS)
   instancedRacks.instanceMatrix.setUsage(THREE.StaticDrawUsage)
 
-  const matrix = new THREE.Matrix4()
   const dummy = new THREE.Object3D()
-
   for (let i = 0; i < TOTAL_SLOTS; i++) {
     const slot = SLOTS[i]
     dummy.position.set(slot.x, slot.y, slot.z)
@@ -460,10 +503,8 @@ function buildInstancedRacks(targetScene) {
 }
 
 function buildRackStructuralPosts(targetScene) {
-  // Thin upright posts for realistic shelving frames
   const postGeom = new THREE.BoxGeometry(0.04, 2.3, 0.04)
   const postMat = new THREE.MeshBasicMaterial({ color: 0x475569 })
-  // Total posts: 6 aisles * 2 sides * 11 upright points * 2 corners = approx 264 posts
   const postMesh = new THREE.InstancedMesh(postGeom, postMat, 300)
   const dummy = new THREE.Object3D()
   let idx = 0
@@ -517,7 +558,6 @@ function setupInteractions() {
   }
 
   clickHandler = e => {
-    // Only register genuine clicks (not drag-orbits)
     if (controls?.state !== -1) return
 
     const rect = renderer.domElement.getBoundingClientRect()
@@ -533,7 +573,6 @@ function setupInteractions() {
         handleSlotClick(slotId)
       }
     } else {
-      // Clicked empty floor: clear selection
       if (selectedSlotId !== null) {
         selectedSlotId = null
         selectionBox.visible = false
@@ -550,7 +589,6 @@ function handleSlotClick(slotId) {
   playClickSound()
 
   if (selectedSlotId === null) {
-    // First click: select slot
     selectedSlotId = slotId
     const slot = SLOTS[slotId]
     selectionBox.position.set(slot.x, slot.y, slot.z)
@@ -563,12 +601,10 @@ function handleSlotClick(slotId) {
       product: slotAssignments.get(slotId) || null
     })
   } else if (selectedSlotId === slotId) {
-    // Clicked same slot: cancel selection
     selectedSlotId = null
     selectionBox.visible = false
     refreshAllColors(0)
   } else {
-    // Second click on different slot: emit swap-request
     const slotA = selectedSlotId
     const slotB = slotId
     selectedSlotId = null
@@ -589,10 +625,9 @@ function handleSlotClick(slotId) {
 }
 
 // ==========================================
-// TOOLTIP & OVERLAYS
+// TOOLTIP, LABELS & REGRET HUD
 // ==========================================
 function setupOverlays(container) {
-  // Tooltip
   tooltipEl = document.createElement('div')
   tooltipEl.style.position = 'absolute'
   tooltipEl.style.display = 'none'
@@ -609,7 +644,6 @@ function setupOverlays(container) {
   tooltipEl.style.transform = 'translate(14px, 14px)'
   container.appendChild(tooltipEl)
 
-  // Floating DOCK label
   dockLabelEl = document.createElement('div')
   dockLabelEl.textContent = 'DOCK (0, 0)'
   dockLabelEl.style.position = 'absolute'
@@ -625,7 +659,6 @@ function setupOverlays(container) {
   dockLabelEl.style.boxShadow = '0 4px 12px rgba(217, 119, 6, 0.3)'
   container.appendChild(dockLabelEl)
 
-  // Verified Badge (Hidden until verified)
   verificationBadgeEl = document.createElement('div')
   verificationBadgeEl.textContent = '✔ Twin Verified (< 0.5m match)'
   verificationBadgeEl.style.position = 'absolute'
@@ -642,7 +675,6 @@ function setupOverlays(container) {
   verificationBadgeEl.style.transition = 'opacity 0.3s ease'
   container.appendChild(verificationBadgeEl)
 
-  // Audio Mute/Unmute Button
   audioButtonEl = document.createElement('button')
   audioButtonEl.textContent = isAudioMuted() ? '🔇 Audio Off' : '🔊 Audio On'
   audioButtonEl.style.position = 'absolute'
@@ -661,7 +693,6 @@ function setupOverlays(container) {
   }
   container.appendChild(audioButtonEl)
 
-  // Debug Stats if ?debug=1
   if (window.location.search.includes('debug=1')) {
     debugStatsEl = document.createElement('div')
     debugStatsEl.style.position = 'absolute'
@@ -682,7 +713,6 @@ function showTooltip(slotId, clientX, clientY) {
   if (!tooltipEl || !containerRef) return
   const slot = SLOTS[slotId]
   const product = slotAssignments.get(slotId)
-
   const zoneColor = slot.zone === 'hazard' ? '#f77f00' : slot.zone === 'fragile' ? '#48cae4' : '#94a3b8'
 
   tooltipEl.innerHTML = `
@@ -706,11 +736,64 @@ function hideTooltip() {
   if (tooltipEl) tooltipEl.style.display = 'none'
 }
 
+function updateRegretLabelPositions() {
+  if (activeColorMode !== 'regret' || !camera || !containerRef) {
+    regretLabels.forEach(el => el.remove())
+    regretLabels.length = 0
+    return
+  }
+
+  const regretList = Array.isArray(colorModeData) ? colorModeData : colorModeData?.regretList || []
+  const top3 = regretList.slice(0, 3)
+
+  // Ensure label elements exist
+  while (regretLabels.length < top3.length) {
+    const el = document.createElement('div')
+    el.style.position = 'absolute'
+    el.style.pointerEvents = 'none'
+    el.style.background = 'rgba(239, 68, 68, 0.95)'
+    el.style.color = '#ffffff'
+    el.style.fontWeight = 'bold'
+    el.style.fontSize = '11px'
+    el.style.padding = '3px 8px'
+    el.style.borderRadius = '4px'
+    el.style.boxShadow = '0 4px 10px rgba(239, 68, 68, 0.4)'
+    el.style.zIndex = '80'
+    el.style.transform = 'translate(-50%, -100%)'
+    containerRef.appendChild(el)
+    regretLabels.push(el)
+  }
+
+  const rect = containerRef.getBoundingClientRect()
+  const tempVec = new THREE.Vector3()
+
+  top3.forEach((item, idx) => {
+    const el = regretLabels[idx]
+    const slot = SLOTS[item.slotId]
+    if (!slot) return
+
+    tempVec.set(slot.x, slot.y + 0.6, slot.z)
+    tempVec.project(camera)
+
+    if (tempVec.z > 1) {
+      el.style.display = 'none'
+      return
+    }
+
+    const screenX = (tempVec.x * 0.5 + 0.5) * rect.width
+    const screenY = (tempVec.y * -0.5 + 0.5) * rect.height
+
+    el.style.display = 'block'
+    el.style.left = `${screenX}px`
+    el.style.top = `${screenY}px`
+    el.textContent = `#${idx + 1} Regret: ${item.regretScore || 0}`
+  })
+}
+
 // ==========================================
 // REPLAY & PICKER LOGIC (playOrders, stopReplay)
 // ==========================================
 let replayActive = false
-let replayCancel = null
 
 function handlePickStart(slotId, isGhost) {
   if (!isGhost) {
@@ -728,17 +811,13 @@ function handlePickEnd(slotId, isGhost) {
   }
 }
 
-/**
- * Transforms route slots into physical aisle waypoints starting and ending at dock (0,0).
- */
 export function buildAisleWaypoints(slotIds) {
-  const waypoints = [{ x: 0, z: 0 }] // Start at dock
+  const waypoints = [{ x: 0, z: 0 }]
 
   for (const sId of slotIds) {
     const slot = SLOTS[sId]
     if (!slot) continue
 
-    // Picker walks along the aisle centerline (aisleX, z)
     waypoints.push({
       x: slot.aisleX,
       z: slot.z,
@@ -747,7 +826,6 @@ export function buildAisleWaypoints(slotIds) {
     })
   }
 
-  // Return to dock (0, 0)
   waypoints.push({ x: 0, z: 0 })
   return waypoints
 }
@@ -764,8 +842,8 @@ export function playOrders(routes, options = {}) {
     replayActive = true
     const speed = Math.max(0.1, Number(options.speed) || 1)
     const runGhost = Boolean(options.ghost)
+    const method = options.method || activeRoutingMethod || 'sshape'
 
-    // Parse player orders
     const playerOrders = (Array.isArray(routes) ? routes : []).map(r => {
       if (Array.isArray(r) && typeof r[0] === 'number') {
         return buildAisleWaypoints(r)
@@ -775,7 +853,6 @@ export function playOrders(routes, options = {}) {
 
     playerPicker.loadOrders(playerOrders)
 
-    // Parse ghost orders if supplied
     if (runGhost && options.ghostRoutes) {
       const ghostOrders = options.ghostRoutes.map(r => {
         if (Array.isArray(r) && typeof r[0] === 'number') {
@@ -786,8 +863,7 @@ export function playOrders(routes, options = {}) {
       ghostPicker.loadOrders(ghostOrders)
     }
 
-    // Draw active route line
-    updateRouteLine(playerOrders[0])
+    updateRouteLine(playerOrders[0], method)
 
     let lastTime = performance.now()
     let lastProgressEmit = 0
@@ -806,7 +882,6 @@ export function playOrders(routes, options = {}) {
         ghostPicker.update(deltaSec, speed)
       }
 
-      // Throttled progress event (~10 Hz)
       if (now - lastProgressEmit >= 100) {
         lastProgressEmit = now
         emit('replay-progress', {
@@ -851,17 +926,18 @@ export function stopReplay() {
   emit('replay-progress', { progress: 0, complete: false, stopped: true })
 }
 
-function updateRouteLine(waypoints) {
+function updateRouteLine(waypoints, method = 'sshape') {
   clearRouteLines()
   if (!waypoints || waypoints.length < 2 || !scene) return
 
+  const lineColor = METHOD_COLORS[method] || METHOD_COLORS.sshape
   const points = waypoints.map(wp => new THREE.Vector3(wp.x, 0.08, wp.z))
   const geom = new THREE.BufferGeometry().setFromPoints(points)
   const mat = new THREE.LineBasicMaterial({
-    color: 0x38bdf8,
+    color: lineColor,
     linewidth: 2,
     transparent: true,
-    opacity: 0.8
+    opacity: 0.85
   })
 
   routeLine = new THREE.Line(geom, mat)
@@ -878,7 +954,7 @@ function clearRouteLines() {
 }
 
 // ==========================================
-// EXPORTED SCENE APIS (As defined in CONTRACTS.md)
+// EXPORTED SCENE APIS
 // ==========================================
 
 export function setAssignment(assignment, products = []) {
@@ -889,7 +965,6 @@ export function setAssignment(assignment, products = []) {
     prodMap.set(p.id, p)
   }
 
-  // Handle plain array assignment[productId] = slotId
   if (Array.isArray(assignment)) {
     assignment.forEach((slotId, prodId) => {
       if (slotId !== undefined && slotId !== null && slotId < TOTAL_SLOTS) {
@@ -918,12 +993,21 @@ export function setColorMode(mode, data = {}) {
   activeColorMode = mode
   colorModeData = data || {}
 
-  // Glide camera to top-down view when entering heatmap mode as per spec
+  // Glide camera smoothly to top-down view when entering heatmap mode
   if (mode === 'heat') {
-    setCameraPreset('top')
+    setCameraPreset('top', true)
   }
 
   refreshAllColors(0)
+  updateRegretLabelPositions()
+}
+
+export function setRoutingMethodVisual(method) {
+  activeRoutingMethod = method
+  if (routeLine && playerPicker?.orders?.length) {
+    const currentOrder = playerPicker.orders[playerPicker.currentOrderIndex] || playerPicker.orders[0]
+    updateRouteLine(currentOrder, method)
+  }
 }
 
 export function highlightSlots(slotIds, type = 'hint') {
@@ -949,24 +1033,43 @@ export function clearHighlights() {
   refreshAllColors(0)
 }
 
-export function setCameraPreset(preset) {
+export function setCameraPreset(preset, smooth = true) {
   if (!camera) return
 
+  let targetPos
   if (preset === 'top') {
-    camera.position.set(14, 34, 9)
-    if (controls) {
-      controls.target.set(14, 0, 9)
-      controls.update()
-    }
+    targetPos = { x: 14, y: 34, z: 9 }
   } else if (preset === 'angled') {
-    camera.position.set(14, 22, 28)
-    if (controls) {
-      controls.target.set(14, 0, 9)
-      controls.update()
-    }
+    targetPos = { x: 14, y: 22, z: 28 }
   } else {
     throw new Error(`Unknown camera preset: ${preset}. Must be 'top' or 'angled'.`)
   }
+
+  if (smooth) {
+    gsap.to(camera.position, {
+      x: targetPos.x,
+      y: targetPos.y,
+      z: targetPos.z,
+      duration: 1.2,
+      ease: 'power2.inOut',
+      onUpdate: () => {
+        if (controls) {
+          controls.target.set(14, 0, 9)
+          controls.update()
+        }
+      }
+    })
+  } else {
+    camera.position.set(targetPos.x, targetPos.y, targetPos.z)
+    if (controls) {
+      controls.target.set(14, 0, 9)
+      controls.update()
+    }
+  }
+}
+
+export function triggerConfetti(count = 100) {
+  fireConfetti(count)
 }
 
 export function getSlotInfo(slotId) {
@@ -1011,6 +1114,9 @@ export function disposeScene() {
     ghostPicker.dispose()
     ghostPicker = null
   }
+
+  regretLabels.forEach(el => el.remove())
+  regretLabels.length = 0
 
   if (tooltipEl?.parentNode) tooltipEl.remove()
   if (dockLabelEl?.parentNode) dockLabelEl.remove()

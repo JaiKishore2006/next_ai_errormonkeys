@@ -77,14 +77,28 @@ export function createPickerMesh({ isGhost = false } = {}) {
   legs.position.y = 0.2
   group.add(legs)
 
-  // Head and Safety Helmet
+  // Head and Safety Helmet Group for Idle Animation
+  const headGroup = new THREE.Group()
+  headGroup.name = 'headGroup'
+  headGroup.position.y = 0.9
+
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 10), skinMat)
-  head.position.y = 0.9
-  group.add(head)
+  headGroup.add(head)
 
   const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.5), hatMat)
-  helmet.position.y = 0.93
-  group.add(helmet)
+  helmet.position.y = 0.03
+  headGroup.add(helmet)
+
+  group.add(headGroup)
+
+  // Arm for Waving / Idle Gesture
+  const armGroup = new THREE.Group()
+  armGroup.name = 'rightArm'
+  armGroup.position.set(0.24, 0.7, 0)
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.35, 0.08), bodyMat)
+  arm.position.y = -0.15
+  armGroup.add(arm)
+  group.add(armGroup)
 
   // Small Picking Trolley / Cart behind picker
   const cartGroup = new THREE.Group()
@@ -149,6 +163,9 @@ export class PickerRunner {
     this.mesh.visible = false
     this.scene.add(this.mesh)
 
+    this.headGroup = this.mesh.getObjectByName('headGroup')
+    this.rightArm = this.mesh.getObjectByName('rightArm')
+
     this.reset()
   }
 
@@ -209,6 +226,25 @@ export class PickerRunner {
         isPickStop: Boolean(p2.isPick),
         slotId: p2.slotId ?? null
       })
+    }
+  }
+
+  /**
+   * Subtle idle breathing and head rotation / waving when stopped.
+   */
+  updateIdle(time) {
+    if (!this.mesh.visible) return
+
+    if (this.headGroup) {
+      this.headGroup.rotation.y = Math.sin(time * 1.5) * 0.2
+      this.headGroup.position.y = 0.9 + Math.sin(time * 2.5) * 0.015
+    }
+
+    if (this.rightArm) {
+      // Gentle waving gesture during idle
+      if (!this.isGhost) {
+        this.rightArm.rotation.z = Math.sin(time * 2) * 0.25 - 0.2
+      }
     }
   }
 
