@@ -31,3 +31,30 @@
 - Installed `vitest` as devDependency and configured `"test": "vitest run"` in `package.json`.
 - Established project directory structure for Person B: `data-pipeline/`, `src/engine/`, `tests/`.
 - Verified test runner passes successfully (`tests/engine.test.js`).
+
+### H+1:00 — Phase B1: Real Data Pipeline & Layout Generation Complete
+- Built automated downloader `data-pipeline/download.py` for UCI Online Retail II dataset (`data-raw/`).
+- Converted 1,067,371 rows of Excel workbook to high-performance Parquet format (`data-raw/retail.parquet`, 6.9 MB).
+- Implemented data cleaning pipeline (`data-pipeline/clean.py`):
+  - Initial raw transactions: 1,067,371 rows.
+  - Removed cancellations & adjustment invoices (`^\d{6}$`): 19,500 rows.
+  - Filtered non-product StockCodes (`^\d{5}[A-Za-z]{0,2}$`): 4,878 rows.
+  - Removed non-positive quantities and prices: 6,116 rows.
+  - Final clean transactions: 1,036,877 rows.
+- Selected 100 core products:
+  - Top 70 by total annual pick frequency (distinct invoices).
+  - Top 30 by November–December holiday uplift to power Level 5 peak season gameplay.
+- Applied keyword synthetic classification:
+  - Hazard: `CANDLE`, `T-LIGHT`, `TEALIGHT`, `MATCH`, `INCENSE` (assigned strictly to Aisle 5).
+  - Fragile: `GLASS`, `CERAMIC`, `MUG`, `CUP`, `TEAPOT`, `PLATE`, `BOWL`, `VASE` (assigned strictly to Aisle 4).
+  - Heavy: `TIN`, `JAR`, `BOX`, `BOTTLE`, `LANTERN`, `BUCKET`, `BASKET`, `FRAME` (assigned strictly to Level 0).
+  - All 100 original slots validated 100% legal under warehouse constraints.
+- Generated full production datasets in `public/data/`:
+  - `layout.json`: Full 6-aisle, 240-slot grid with exact coordinates.
+  - `products.json`: 100 products with metadata and legal `originalSlot`.
+  - `orders_base.json`: 1,119 real orders from representative base month `2011-03`.
+  - Monthly orders (`orders_YYYY-MM.json` for all 12 active months).
+  - `cooccurrence.json`: Top 500 co-occurring product pairs.
+  - `monthly_demand.json`: 12-month demand frequency matrix.
+- Implemented and verified `src/engine/geometry.js` (symmetry, same-aisle, cross-aisle routing, dock distances) with 6 passing Vitest tests.
+- Entire pipeline runs reproducibly via `python data-pipeline/build_json.py` in ~30 seconds.

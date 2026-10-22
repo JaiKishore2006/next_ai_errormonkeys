@@ -1,0 +1,1002 @@
+[
+  {
+    "id": 0,
+    "code": "85123A",
+    "name": "WHITE HANGING HEART T-LIGHT HOLDER",
+    "freq": 5365,
+    "weight": "light",
+    "fragile": false,
+    "hazard": true,
+    "originalSlot": 209
+  },
+  {
+    "id": 1,
+    "code": "85099B",
+    "name": "JUMBO BAG RED RETROSPOT",
+    "freq": 3989,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 84
+  },
+  {
+    "id": 2,
+    "code": "22423",
+    "name": "REGENCY CAKESTAND 3 TIER",
+    "freq": 3918,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 56
+  },
+  {
+    "id": 3,
+    "code": "21212",
+    "name": "PACK OF 72 RETROSPOT CAKE CASES",
+    "freq": 3118,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 28
+  },
+  {
+    "id": 4,
+    "code": "20725",
+    "name": "LUNCH BAG RED RETROSPOT",
+    "freq": 3056,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 9
+  },
+  {
+    "id": 5,
+    "code": "84879",
+    "name": "ASSORTED COLOUR BIRD ORNAMENT",
+    "freq": 2807,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 81
+  },
+  {
+    "id": 6,
+    "code": "47566",
+    "name": "PARTY BUNTING",
+    "freq": 2674,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 20
+  },
+  {
+    "id": 7,
+    "code": "21232",
+    "name": "STRAWBERRY CERAMIC TRINKET BOX",
+    "freq": 2435,
+    "weight": "heavy",
+    "fragile": true,
+    "hazard": false,
+    "originalSlot": 162
+  },
+  {
+    "id": 8,
+    "code": "22383",
+    "name": "LUNCH BAG SUKI  DESIGN",
+    "freq": 2398,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 52
+  },
+  {
+    "id": 9,
+    "code": "20727",
+    "name": "LUNCH BAG  BLACK SKULL.",
+    "freq": 2351,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 13
+  },
+  {
+    "id": 10,
+    "code": "21931",
+    "name": "JUMBO STORAGE BAG SUKI",
+    "freq": 2329,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 39
+  },
+  {
+    "id": 11,
+    "code": "22197",
+    "name": "SMALL POPCORN HOLDER",
+    "freq": 2322,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 47
+  },
+  {
+    "id": 12,
+    "code": "22386",
+    "name": "JUMBO BAG PINK POLKADOT",
+    "freq": 2245,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 54
+  },
+  {
+    "id": 13,
+    "code": "22411",
+    "name": "JUMBO SHOPPER VINTAGE RED PAISLEY",
+    "freq": 2192,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 55
+  },
+  {
+    "id": 14,
+    "code": "22382",
+    "name": "LUNCH BAG SPACEBOY DESIGN",
+    "freq": 2153,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 51
+  },
+  {
+    "id": 15,
+    "code": "22469",
+    "name": "HEART OF WICKER SMALL",
+    "freq": 2151,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 58
+  },
+  {
+    "id": 16,
+    "code": "84991",
+    "name": "60 TEATIME FAIRY CAKE CASES",
+    "freq": 2127,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 82
+  },
+  {
+    "id": 17,
+    "code": "21080",
+    "name": "SET/20 RED RETROSPOT PAPER NAPKINS",
+    "freq": 2123,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 21
+  },
+  {
+    "id": 18,
+    "code": "22384",
+    "name": "LUNCH BAG PINK POLKADOT",
+    "freq": 2106,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 53
+  },
+  {
+    "id": 19,
+    "code": "22139",
+    "name": "RETROSPOT TEA SET CERAMIC 11 PC",
+    "freq": 2093,
+    "weight": "medium",
+    "fragile": true,
+    "hazard": false,
+    "originalSlot": 163
+  },
+  {
+    "id": 20,
+    "code": "20728",
+    "name": "LUNCH BAG CARS BLUE",
+    "freq": 2067,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 15
+  },
+  {
+    "id": 21,
+    "code": "21754",
+    "name": "HOME BUILDING BLOCK WORD",
+    "freq": 2066,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 33
+  },
+  {
+    "id": 22,
+    "code": "22457",
+    "name": "NATURAL SLATE HEART CHALKBOARD",
+    "freq": 2046,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 57
+  },
+  {
+    "id": 23,
+    "code": "20724",
+    "name": "RED RETROSPOT CHARLOTTE BAG",
+    "freq": 2035,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 7
+  },
+  {
+    "id": 24,
+    "code": "20914",
+    "name": "SET/5 RED RETROSPOT LID GLASS BOWLS",
+    "freq": 2030,
+    "weight": "light",
+    "fragile": true,
+    "hazard": false,
+    "originalSlot": 161
+  },
+  {
+    "id": 25,
+    "code": "22086",
+    "name": "PAPER CHAIN KIT 50'S CHRISTMAS",
+    "freq": 2018,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 43
+  },
+  {
+    "id": 26,
+    "code": "82482",
+    "name": "WOODEN PICTURE FRAME WHITE FINISH",
+    "freq": 2006,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 22
+  },
+  {
+    "id": 27,
+    "code": "21977",
+    "name": "PACK OF 60 PINK PAISLEY CAKE CASES",
+    "freq": 1993,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 40
+  },
+  {
+    "id": 28,
+    "code": "82494L",
+    "name": "WOODEN FRAME ANTIQUE WHITE",
+    "freq": 1973,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 24
+  },
+  {
+    "id": 29,
+    "code": "22470",
+    "name": "HEART OF WICKER LARGE",
+    "freq": 1952,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 59
+  },
+  {
+    "id": 30,
+    "code": "20726",
+    "name": "LUNCH BAG WOODLAND",
+    "freq": 1926,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 11
+  },
+  {
+    "id": 31,
+    "code": "22138",
+    "name": "BAKING SET 9 PIECE RETROSPOT",
+    "freq": 1914,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 44
+  },
+  {
+    "id": 32,
+    "code": "21034",
+    "name": "REX CASH+CARRY JUMBO SHOPPER",
+    "freq": 1902,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 19
+  },
+  {
+    "id": 33,
+    "code": "21790",
+    "name": "VINTAGE SNAP CARDS",
+    "freq": 1888,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 35
+  },
+  {
+    "id": 34,
+    "code": "85099C",
+    "name": "JUMBO  BAG BAROQUE BLACK WHITE",
+    "freq": 1868,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 85
+  },
+  {
+    "id": 35,
+    "code": "85099F",
+    "name": "JUMBO BAG STRAWBERRY",
+    "freq": 1830,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 86
+  },
+  {
+    "id": 36,
+    "code": "22178",
+    "name": "VICTORIAN GLASS HANGING T-LIGHT",
+    "freq": 1816,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": true,
+    "originalSlot": 203
+  },
+  {
+    "id": 37,
+    "code": "21181",
+    "name": "PLEASE ONE PERSON METAL SIGN",
+    "freq": 1810,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 27
+  },
+  {
+    "id": 38,
+    "code": "84946",
+    "name": "ANTIQUE SILVER TEA GLASS ETCHED",
+    "freq": 1769,
+    "weight": "medium",
+    "fragile": true,
+    "hazard": false,
+    "originalSlot": 167
+  },
+  {
+    "id": 39,
+    "code": "21733",
+    "name": "RED HANGING HEART T-LIGHT HOLDER",
+    "freq": 1760,
+    "weight": "light",
+    "fragile": false,
+    "hazard": true,
+    "originalSlot": 201
+  },
+  {
+    "id": 40,
+    "code": "22077",
+    "name": "6 RIBBONS RUSTIC CHARM",
+    "freq": 1751,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 41
+  },
+  {
+    "id": 41,
+    "code": "22355",
+    "name": "CHARLOTTE BAG SUKI DESIGN",
+    "freq": 1742,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 48
+  },
+  {
+    "id": 42,
+    "code": "20685",
+    "name": "DOORMAT RED RETROSPOT",
+    "freq": 1725,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 1
+  },
+  {
+    "id": 43,
+    "code": "22112",
+    "name": "CHOCOLATE HOT WATER BOTTLE",
+    "freq": 1721,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 8
+  },
+  {
+    "id": 44,
+    "code": "22090",
+    "name": "PAPER BUNTING RETROSPOT",
+    "freq": 1703,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 4
+  },
+  {
+    "id": 45,
+    "code": "21755",
+    "name": "LOVE BUILDING BLOCK WORD",
+    "freq": 1696,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 34
+  },
+  {
+    "id": 46,
+    "code": "22111",
+    "name": "SCOTTIE DOG HOT WATER BOTTLE",
+    "freq": 1689,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 6
+  },
+  {
+    "id": 47,
+    "code": "48138",
+    "name": "DOORMAT UNION FLAG",
+    "freq": 1664,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 79
+  },
+  {
+    "id": 48,
+    "code": "21175",
+    "name": "GIN + TONIC DIET METAL SIGN",
+    "freq": 1659,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 25
+  },
+  {
+    "id": 49,
+    "code": "22666",
+    "name": "RECIPE BOX PANTRY YELLOW DESIGN",
+    "freq": 1657,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 12
+  },
+  {
+    "id": 50,
+    "code": "21929",
+    "name": "JUMBO BAG PINK VINTAGE PAISLEY",
+    "freq": 1619,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 38
+  },
+  {
+    "id": 51,
+    "code": "22356",
+    "name": "CHARLOTTE BAG PINK POLKADOT",
+    "freq": 1584,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 49
+  },
+  {
+    "id": 52,
+    "code": "22114",
+    "name": "HOT WATER BOTTLE TEA AND SYMPATHY",
+    "freq": 1583,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 10
+  },
+  {
+    "id": 53,
+    "code": "20719",
+    "name": "WOODLAND CHARLOTTE BAG",
+    "freq": 1573,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 5
+  },
+  {
+    "id": 54,
+    "code": "22379",
+    "name": "RECYCLING BAG RETROSPOT",
+    "freq": 1570,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 50
+  },
+  {
+    "id": 55,
+    "code": "21928",
+    "name": "JUMBO BAG SCANDINAVIAN PAISLEY",
+    "freq": 1542,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 37
+  },
+  {
+    "id": 56,
+    "code": "21731",
+    "name": "RED TOADSTOOL LED NIGHT LIGHT",
+    "freq": 1537,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 31
+  },
+  {
+    "id": 57,
+    "code": "21843",
+    "name": "RED RETROSPOT CAKE STAND",
+    "freq": 1527,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 36
+  },
+  {
+    "id": 58,
+    "code": "21231",
+    "name": "SWEETHEART CERAMIC TRINKET BOX",
+    "freq": 1482,
+    "weight": "heavy",
+    "fragile": true,
+    "hazard": false,
+    "originalSlot": 160
+  },
+  {
+    "id": 59,
+    "code": "21213",
+    "name": "PACK OF 72 SKULL CAKE CASES",
+    "freq": 1481,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 29
+  },
+  {
+    "id": 60,
+    "code": "84992",
+    "name": "72 SWEETHEART FAIRY CAKE CASES",
+    "freq": 1460,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 83
+  },
+  {
+    "id": 61,
+    "code": "85152",
+    "name": "HAND OVER THE CHOCOLATE   SIGN",
+    "freq": 1460,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 87
+  },
+  {
+    "id": 62,
+    "code": "22910",
+    "name": "PAPER CHAIN KIT VINTAGE CHRISTMAS",
+    "freq": 1427,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 60
+  },
+  {
+    "id": 63,
+    "code": "21166",
+    "name": "COOK WITH WINE METAL SIGN",
+    "freq": 1425,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 23
+  },
+  {
+    "id": 64,
+    "code": "84970S",
+    "name": "HANGING HEART ZINC T-LIGHT HOLDER",
+    "freq": 1425,
+    "weight": "light",
+    "fragile": false,
+    "hazard": true,
+    "originalSlot": 207
+  },
+  {
+    "id": 65,
+    "code": "84978",
+    "name": "HANGING HEART JAR T-LIGHT HOLDER",
+    "freq": 1425,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": true,
+    "originalSlot": 200
+  },
+  {
+    "id": 66,
+    "code": "22699",
+    "name": "ROSES REGENCY TEACUP AND SAUCER",
+    "freq": 1424,
+    "weight": "light",
+    "fragile": true,
+    "hazard": false,
+    "originalSlot": 165
+  },
+  {
+    "id": 67,
+    "code": "20712",
+    "name": "JUMBO BAG WOODLAND ANIMALS",
+    "freq": 1415,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 3
+  },
+  {
+    "id": 68,
+    "code": "84836",
+    "name": "ZINC METAL HEART DECORATION",
+    "freq": 1408,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 80
+  },
+  {
+    "id": 69,
+    "code": "22083",
+    "name": "PAPER CHAIN KIT RETROSPOT",
+    "freq": 1401,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 42
+  },
+  {
+    "id": 70,
+    "code": "21479",
+    "name": "WHITE SKULL HOT WATER BOTTLE",
+    "freq": 930,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 0
+  },
+  {
+    "id": 71,
+    "code": "22144",
+    "name": "CHRISTMAS CRAFT LITTLE FRIENDS",
+    "freq": 704,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 46
+  },
+  {
+    "id": 72,
+    "code": "22141",
+    "name": "CHRISTMAS CRAFT TREE TOP ANGEL",
+    "freq": 572,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 45
+  },
+  {
+    "id": 73,
+    "code": "22837",
+    "name": "HOT WATER BOTTLE BABUSHKA",
+    "freq": 450,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 14
+  },
+  {
+    "id": 74,
+    "code": "23581",
+    "name": "JUMBO BAG PAISLEY PARK",
+    "freq": 338,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 72
+  },
+  {
+    "id": 75,
+    "code": "23583",
+    "name": "LUNCH BAG PAISLEY PARK",
+    "freq": 325,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 74
+  },
+  {
+    "id": 76,
+    "code": "23570",
+    "name": "TRADITIONAL PICK UP STICKS GAME",
+    "freq": 276,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 69
+  },
+  {
+    "id": 77,
+    "code": "23582",
+    "name": "VINTAGE DOILY JUMBO BAG RED",
+    "freq": 259,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 73
+  },
+  {
+    "id": 78,
+    "code": "23571",
+    "name": "TRADITIONAL NAUGHTS & CROSSES",
+    "freq": 257,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 70
+  },
+  {
+    "id": 79,
+    "code": "23382",
+    "name": "BOX OF 6 CHRISTMAS CAKE DECORATIONS",
+    "freq": 220,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 16
+  },
+  {
+    "id": 80,
+    "code": "23480",
+    "name": "MINI LIGHTS WOODLAND MUSHROOMS",
+    "freq": 215,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 61
+  },
+  {
+    "id": 81,
+    "code": "23497",
+    "name": "CLASSIC CHROME BICYCLE BELL",
+    "freq": 195,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 63
+  },
+  {
+    "id": 82,
+    "code": "23569",
+    "name": "TRADTIONAL ALPHABET STAMP SET",
+    "freq": 192,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 68
+  },
+  {
+    "id": 83,
+    "code": "23489",
+    "name": "VINTAGE BELLS GARLAND",
+    "freq": 159,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 62
+  },
+  {
+    "id": 84,
+    "code": "23681",
+    "name": "LUNCH BAG RED VINTAGE DOILY",
+    "freq": 132,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 75
+  },
+  {
+    "id": 85,
+    "code": "72756",
+    "name": "FAIRY CAKE CANDLES",
+    "freq": 129,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": true,
+    "originalSlot": 205
+  },
+  {
+    "id": 86,
+    "code": "23552",
+    "name": "BICYCLE PUNCTURE REPAIR KIT",
+    "freq": 116,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 66
+  },
+  {
+    "id": 87,
+    "code": "23499",
+    "name": "SET 12 VINTAGE DOILY CHALK",
+    "freq": 110,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 65
+  },
+  {
+    "id": 88,
+    "code": "23498",
+    "name": "CLASSIC BICYCLE CLIPS",
+    "freq": 99,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 64
+  },
+  {
+    "id": 89,
+    "code": "21740",
+    "name": "COSY SLIPPER SHOES LARGE RED",
+    "freq": 66,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 32
+  },
+  {
+    "id": 90,
+    "code": "21480",
+    "name": "PINK STRIPE HOT WATER BOTTLE",
+    "freq": 57,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 2
+  },
+  {
+    "id": 91,
+    "code": "23695",
+    "name": "DOILY THANK YOU CARD",
+    "freq": 57,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 78
+  },
+  {
+    "id": 92,
+    "code": "20753",
+    "name": "RETRO PINK SPOT WASHING UP GLOVES",
+    "freq": 56,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 17
+  },
+  {
+    "id": 93,
+    "code": "21490",
+    "name": "SET OF THREE 50'S GIFT WRAPS",
+    "freq": 55,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 30
+  },
+  {
+    "id": 94,
+    "code": "84029C",
+    "name": "BROWN FURRY HOT WATER BOTTLE",
+    "freq": 48,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 26
+  },
+  {
+    "id": 95,
+    "code": "23598",
+    "name": "PAPER BUNTING VINTAGE PARTY",
+    "freq": 47,
+    "weight": "heavy",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 18
+  },
+  {
+    "id": 96,
+    "code": "23562",
+    "name": "SET OF 6 RIBBONS PERFECTLY PRETTY",
+    "freq": 43,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 67
+  },
+  {
+    "id": 97,
+    "code": "23694",
+    "name": "PAISLEY PARK CARD",
+    "freq": 41,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 77
+  },
+  {
+    "id": 98,
+    "code": "23691",
+    "name": "WRAP KEEP CALM BIRTHDAY",
+    "freq": 38,
+    "weight": "light",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 76
+  },
+  {
+    "id": 99,
+    "code": "23576",
+    "name": "SNACK TRAY RED VINTAGE DOILY",
+    "freq": 37,
+    "weight": "medium",
+    "fragile": false,
+    "hazard": false,
+    "originalSlot": 71
+  }
+]

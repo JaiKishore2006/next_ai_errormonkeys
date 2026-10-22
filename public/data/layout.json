@@ -1,0 +1,2418 @@
+{
+  "walkSpeed": 1.2,
+  "aisleLength": 18,
+  "dock": {
+    "x": 0,
+    "z": 0
+  },
+  "aisleX": [
+    3,
+    8,
+    13,
+    18,
+    23,
+    28
+  ],
+  "slots": [
+    {
+      "id": 0,
+      "aisle": 0,
+      "side": "L",
+      "bay": 0,
+      "level": 0,
+      "x": 3,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 1,
+      "aisle": 0,
+      "side": "L",
+      "bay": 0,
+      "level": 1,
+      "x": 3,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 2,
+      "aisle": 0,
+      "side": "L",
+      "bay": 1,
+      "level": 0,
+      "x": 3,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 3,
+      "aisle": 0,
+      "side": "L",
+      "bay": 1,
+      "level": 1,
+      "x": 3,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 4,
+      "aisle": 0,
+      "side": "L",
+      "bay": 2,
+      "level": 0,
+      "x": 3,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 5,
+      "aisle": 0,
+      "side": "L",
+      "bay": 2,
+      "level": 1,
+      "x": 3,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 6,
+      "aisle": 0,
+      "side": "L",
+      "bay": 3,
+      "level": 0,
+      "x": 3,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 7,
+      "aisle": 0,
+      "side": "L",
+      "bay": 3,
+      "level": 1,
+      "x": 3,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 8,
+      "aisle": 0,
+      "side": "L",
+      "bay": 4,
+      "level": 0,
+      "x": 3,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 9,
+      "aisle": 0,
+      "side": "L",
+      "bay": 4,
+      "level": 1,
+      "x": 3,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 10,
+      "aisle": 0,
+      "side": "L",
+      "bay": 5,
+      "level": 0,
+      "x": 3,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 11,
+      "aisle": 0,
+      "side": "L",
+      "bay": 5,
+      "level": 1,
+      "x": 3,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 12,
+      "aisle": 0,
+      "side": "L",
+      "bay": 6,
+      "level": 0,
+      "x": 3,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 13,
+      "aisle": 0,
+      "side": "L",
+      "bay": 6,
+      "level": 1,
+      "x": 3,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 14,
+      "aisle": 0,
+      "side": "L",
+      "bay": 7,
+      "level": 0,
+      "x": 3,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 15,
+      "aisle": 0,
+      "side": "L",
+      "bay": 7,
+      "level": 1,
+      "x": 3,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 16,
+      "aisle": 0,
+      "side": "L",
+      "bay": 8,
+      "level": 0,
+      "x": 3,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 17,
+      "aisle": 0,
+      "side": "L",
+      "bay": 8,
+      "level": 1,
+      "x": 3,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 18,
+      "aisle": 0,
+      "side": "L",
+      "bay": 9,
+      "level": 0,
+      "x": 3,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 19,
+      "aisle": 0,
+      "side": "L",
+      "bay": 9,
+      "level": 1,
+      "x": 3,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 20,
+      "aisle": 0,
+      "side": "R",
+      "bay": 0,
+      "level": 0,
+      "x": 3,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 21,
+      "aisle": 0,
+      "side": "R",
+      "bay": 0,
+      "level": 1,
+      "x": 3,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 22,
+      "aisle": 0,
+      "side": "R",
+      "bay": 1,
+      "level": 0,
+      "x": 3,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 23,
+      "aisle": 0,
+      "side": "R",
+      "bay": 1,
+      "level": 1,
+      "x": 3,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 24,
+      "aisle": 0,
+      "side": "R",
+      "bay": 2,
+      "level": 0,
+      "x": 3,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 25,
+      "aisle": 0,
+      "side": "R",
+      "bay": 2,
+      "level": 1,
+      "x": 3,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 26,
+      "aisle": 0,
+      "side": "R",
+      "bay": 3,
+      "level": 0,
+      "x": 3,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 27,
+      "aisle": 0,
+      "side": "R",
+      "bay": 3,
+      "level": 1,
+      "x": 3,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 28,
+      "aisle": 0,
+      "side": "R",
+      "bay": 4,
+      "level": 0,
+      "x": 3,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 29,
+      "aisle": 0,
+      "side": "R",
+      "bay": 4,
+      "level": 1,
+      "x": 3,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 30,
+      "aisle": 0,
+      "side": "R",
+      "bay": 5,
+      "level": 0,
+      "x": 3,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 31,
+      "aisle": 0,
+      "side": "R",
+      "bay": 5,
+      "level": 1,
+      "x": 3,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 32,
+      "aisle": 0,
+      "side": "R",
+      "bay": 6,
+      "level": 0,
+      "x": 3,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 33,
+      "aisle": 0,
+      "side": "R",
+      "bay": 6,
+      "level": 1,
+      "x": 3,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 34,
+      "aisle": 0,
+      "side": "R",
+      "bay": 7,
+      "level": 0,
+      "x": 3,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 35,
+      "aisle": 0,
+      "side": "R",
+      "bay": 7,
+      "level": 1,
+      "x": 3,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 36,
+      "aisle": 0,
+      "side": "R",
+      "bay": 8,
+      "level": 0,
+      "x": 3,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 37,
+      "aisle": 0,
+      "side": "R",
+      "bay": 8,
+      "level": 1,
+      "x": 3,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 38,
+      "aisle": 0,
+      "side": "R",
+      "bay": 9,
+      "level": 0,
+      "x": 3,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 39,
+      "aisle": 0,
+      "side": "R",
+      "bay": 9,
+      "level": 1,
+      "x": 3,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 40,
+      "aisle": 1,
+      "side": "L",
+      "bay": 0,
+      "level": 0,
+      "x": 8,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 41,
+      "aisle": 1,
+      "side": "L",
+      "bay": 0,
+      "level": 1,
+      "x": 8,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 42,
+      "aisle": 1,
+      "side": "L",
+      "bay": 1,
+      "level": 0,
+      "x": 8,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 43,
+      "aisle": 1,
+      "side": "L",
+      "bay": 1,
+      "level": 1,
+      "x": 8,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 44,
+      "aisle": 1,
+      "side": "L",
+      "bay": 2,
+      "level": 0,
+      "x": 8,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 45,
+      "aisle": 1,
+      "side": "L",
+      "bay": 2,
+      "level": 1,
+      "x": 8,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 46,
+      "aisle": 1,
+      "side": "L",
+      "bay": 3,
+      "level": 0,
+      "x": 8,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 47,
+      "aisle": 1,
+      "side": "L",
+      "bay": 3,
+      "level": 1,
+      "x": 8,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 48,
+      "aisle": 1,
+      "side": "L",
+      "bay": 4,
+      "level": 0,
+      "x": 8,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 49,
+      "aisle": 1,
+      "side": "L",
+      "bay": 4,
+      "level": 1,
+      "x": 8,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 50,
+      "aisle": 1,
+      "side": "L",
+      "bay": 5,
+      "level": 0,
+      "x": 8,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 51,
+      "aisle": 1,
+      "side": "L",
+      "bay": 5,
+      "level": 1,
+      "x": 8,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 52,
+      "aisle": 1,
+      "side": "L",
+      "bay": 6,
+      "level": 0,
+      "x": 8,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 53,
+      "aisle": 1,
+      "side": "L",
+      "bay": 6,
+      "level": 1,
+      "x": 8,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 54,
+      "aisle": 1,
+      "side": "L",
+      "bay": 7,
+      "level": 0,
+      "x": 8,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 55,
+      "aisle": 1,
+      "side": "L",
+      "bay": 7,
+      "level": 1,
+      "x": 8,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 56,
+      "aisle": 1,
+      "side": "L",
+      "bay": 8,
+      "level": 0,
+      "x": 8,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 57,
+      "aisle": 1,
+      "side": "L",
+      "bay": 8,
+      "level": 1,
+      "x": 8,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 58,
+      "aisle": 1,
+      "side": "L",
+      "bay": 9,
+      "level": 0,
+      "x": 8,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 59,
+      "aisle": 1,
+      "side": "L",
+      "bay": 9,
+      "level": 1,
+      "x": 8,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 60,
+      "aisle": 1,
+      "side": "R",
+      "bay": 0,
+      "level": 0,
+      "x": 8,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 61,
+      "aisle": 1,
+      "side": "R",
+      "bay": 0,
+      "level": 1,
+      "x": 8,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 62,
+      "aisle": 1,
+      "side": "R",
+      "bay": 1,
+      "level": 0,
+      "x": 8,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 63,
+      "aisle": 1,
+      "side": "R",
+      "bay": 1,
+      "level": 1,
+      "x": 8,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 64,
+      "aisle": 1,
+      "side": "R",
+      "bay": 2,
+      "level": 0,
+      "x": 8,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 65,
+      "aisle": 1,
+      "side": "R",
+      "bay": 2,
+      "level": 1,
+      "x": 8,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 66,
+      "aisle": 1,
+      "side": "R",
+      "bay": 3,
+      "level": 0,
+      "x": 8,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 67,
+      "aisle": 1,
+      "side": "R",
+      "bay": 3,
+      "level": 1,
+      "x": 8,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 68,
+      "aisle": 1,
+      "side": "R",
+      "bay": 4,
+      "level": 0,
+      "x": 8,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 69,
+      "aisle": 1,
+      "side": "R",
+      "bay": 4,
+      "level": 1,
+      "x": 8,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 70,
+      "aisle": 1,
+      "side": "R",
+      "bay": 5,
+      "level": 0,
+      "x": 8,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 71,
+      "aisle": 1,
+      "side": "R",
+      "bay": 5,
+      "level": 1,
+      "x": 8,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 72,
+      "aisle": 1,
+      "side": "R",
+      "bay": 6,
+      "level": 0,
+      "x": 8,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 73,
+      "aisle": 1,
+      "side": "R",
+      "bay": 6,
+      "level": 1,
+      "x": 8,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 74,
+      "aisle": 1,
+      "side": "R",
+      "bay": 7,
+      "level": 0,
+      "x": 8,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 75,
+      "aisle": 1,
+      "side": "R",
+      "bay": 7,
+      "level": 1,
+      "x": 8,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 76,
+      "aisle": 1,
+      "side": "R",
+      "bay": 8,
+      "level": 0,
+      "x": 8,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 77,
+      "aisle": 1,
+      "side": "R",
+      "bay": 8,
+      "level": 1,
+      "x": 8,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 78,
+      "aisle": 1,
+      "side": "R",
+      "bay": 9,
+      "level": 0,
+      "x": 8,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 79,
+      "aisle": 1,
+      "side": "R",
+      "bay": 9,
+      "level": 1,
+      "x": 8,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 80,
+      "aisle": 2,
+      "side": "L",
+      "bay": 0,
+      "level": 0,
+      "x": 13,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 81,
+      "aisle": 2,
+      "side": "L",
+      "bay": 0,
+      "level": 1,
+      "x": 13,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 82,
+      "aisle": 2,
+      "side": "L",
+      "bay": 1,
+      "level": 0,
+      "x": 13,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 83,
+      "aisle": 2,
+      "side": "L",
+      "bay": 1,
+      "level": 1,
+      "x": 13,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 84,
+      "aisle": 2,
+      "side": "L",
+      "bay": 2,
+      "level": 0,
+      "x": 13,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 85,
+      "aisle": 2,
+      "side": "L",
+      "bay": 2,
+      "level": 1,
+      "x": 13,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 86,
+      "aisle": 2,
+      "side": "L",
+      "bay": 3,
+      "level": 0,
+      "x": 13,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 87,
+      "aisle": 2,
+      "side": "L",
+      "bay": 3,
+      "level": 1,
+      "x": 13,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 88,
+      "aisle": 2,
+      "side": "L",
+      "bay": 4,
+      "level": 0,
+      "x": 13,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 89,
+      "aisle": 2,
+      "side": "L",
+      "bay": 4,
+      "level": 1,
+      "x": 13,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 90,
+      "aisle": 2,
+      "side": "L",
+      "bay": 5,
+      "level": 0,
+      "x": 13,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 91,
+      "aisle": 2,
+      "side": "L",
+      "bay": 5,
+      "level": 1,
+      "x": 13,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 92,
+      "aisle": 2,
+      "side": "L",
+      "bay": 6,
+      "level": 0,
+      "x": 13,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 93,
+      "aisle": 2,
+      "side": "L",
+      "bay": 6,
+      "level": 1,
+      "x": 13,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 94,
+      "aisle": 2,
+      "side": "L",
+      "bay": 7,
+      "level": 0,
+      "x": 13,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 95,
+      "aisle": 2,
+      "side": "L",
+      "bay": 7,
+      "level": 1,
+      "x": 13,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 96,
+      "aisle": 2,
+      "side": "L",
+      "bay": 8,
+      "level": 0,
+      "x": 13,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 97,
+      "aisle": 2,
+      "side": "L",
+      "bay": 8,
+      "level": 1,
+      "x": 13,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 98,
+      "aisle": 2,
+      "side": "L",
+      "bay": 9,
+      "level": 0,
+      "x": 13,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 99,
+      "aisle": 2,
+      "side": "L",
+      "bay": 9,
+      "level": 1,
+      "x": 13,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 100,
+      "aisle": 2,
+      "side": "R",
+      "bay": 0,
+      "level": 0,
+      "x": 13,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 101,
+      "aisle": 2,
+      "side": "R",
+      "bay": 0,
+      "level": 1,
+      "x": 13,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 102,
+      "aisle": 2,
+      "side": "R",
+      "bay": 1,
+      "level": 0,
+      "x": 13,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 103,
+      "aisle": 2,
+      "side": "R",
+      "bay": 1,
+      "level": 1,
+      "x": 13,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 104,
+      "aisle": 2,
+      "side": "R",
+      "bay": 2,
+      "level": 0,
+      "x": 13,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 105,
+      "aisle": 2,
+      "side": "R",
+      "bay": 2,
+      "level": 1,
+      "x": 13,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 106,
+      "aisle": 2,
+      "side": "R",
+      "bay": 3,
+      "level": 0,
+      "x": 13,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 107,
+      "aisle": 2,
+      "side": "R",
+      "bay": 3,
+      "level": 1,
+      "x": 13,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 108,
+      "aisle": 2,
+      "side": "R",
+      "bay": 4,
+      "level": 0,
+      "x": 13,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 109,
+      "aisle": 2,
+      "side": "R",
+      "bay": 4,
+      "level": 1,
+      "x": 13,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 110,
+      "aisle": 2,
+      "side": "R",
+      "bay": 5,
+      "level": 0,
+      "x": 13,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 111,
+      "aisle": 2,
+      "side": "R",
+      "bay": 5,
+      "level": 1,
+      "x": 13,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 112,
+      "aisle": 2,
+      "side": "R",
+      "bay": 6,
+      "level": 0,
+      "x": 13,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 113,
+      "aisle": 2,
+      "side": "R",
+      "bay": 6,
+      "level": 1,
+      "x": 13,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 114,
+      "aisle": 2,
+      "side": "R",
+      "bay": 7,
+      "level": 0,
+      "x": 13,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 115,
+      "aisle": 2,
+      "side": "R",
+      "bay": 7,
+      "level": 1,
+      "x": 13,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 116,
+      "aisle": 2,
+      "side": "R",
+      "bay": 8,
+      "level": 0,
+      "x": 13,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 117,
+      "aisle": 2,
+      "side": "R",
+      "bay": 8,
+      "level": 1,
+      "x": 13,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 118,
+      "aisle": 2,
+      "side": "R",
+      "bay": 9,
+      "level": 0,
+      "x": 13,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 119,
+      "aisle": 2,
+      "side": "R",
+      "bay": 9,
+      "level": 1,
+      "x": 13,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 120,
+      "aisle": 3,
+      "side": "L",
+      "bay": 0,
+      "level": 0,
+      "x": 18,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 121,
+      "aisle": 3,
+      "side": "L",
+      "bay": 0,
+      "level": 1,
+      "x": 18,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 122,
+      "aisle": 3,
+      "side": "L",
+      "bay": 1,
+      "level": 0,
+      "x": 18,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 123,
+      "aisle": 3,
+      "side": "L",
+      "bay": 1,
+      "level": 1,
+      "x": 18,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 124,
+      "aisle": 3,
+      "side": "L",
+      "bay": 2,
+      "level": 0,
+      "x": 18,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 125,
+      "aisle": 3,
+      "side": "L",
+      "bay": 2,
+      "level": 1,
+      "x": 18,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 126,
+      "aisle": 3,
+      "side": "L",
+      "bay": 3,
+      "level": 0,
+      "x": 18,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 127,
+      "aisle": 3,
+      "side": "L",
+      "bay": 3,
+      "level": 1,
+      "x": 18,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 128,
+      "aisle": 3,
+      "side": "L",
+      "bay": 4,
+      "level": 0,
+      "x": 18,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 129,
+      "aisle": 3,
+      "side": "L",
+      "bay": 4,
+      "level": 1,
+      "x": 18,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 130,
+      "aisle": 3,
+      "side": "L",
+      "bay": 5,
+      "level": 0,
+      "x": 18,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 131,
+      "aisle": 3,
+      "side": "L",
+      "bay": 5,
+      "level": 1,
+      "x": 18,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 132,
+      "aisle": 3,
+      "side": "L",
+      "bay": 6,
+      "level": 0,
+      "x": 18,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 133,
+      "aisle": 3,
+      "side": "L",
+      "bay": 6,
+      "level": 1,
+      "x": 18,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 134,
+      "aisle": 3,
+      "side": "L",
+      "bay": 7,
+      "level": 0,
+      "x": 18,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 135,
+      "aisle": 3,
+      "side": "L",
+      "bay": 7,
+      "level": 1,
+      "x": 18,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 136,
+      "aisle": 3,
+      "side": "L",
+      "bay": 8,
+      "level": 0,
+      "x": 18,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 137,
+      "aisle": 3,
+      "side": "L",
+      "bay": 8,
+      "level": 1,
+      "x": 18,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 138,
+      "aisle": 3,
+      "side": "L",
+      "bay": 9,
+      "level": 0,
+      "x": 18,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 139,
+      "aisle": 3,
+      "side": "L",
+      "bay": 9,
+      "level": 1,
+      "x": 18,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 140,
+      "aisle": 3,
+      "side": "R",
+      "bay": 0,
+      "level": 0,
+      "x": 18,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 141,
+      "aisle": 3,
+      "side": "R",
+      "bay": 0,
+      "level": 1,
+      "x": 18,
+      "z": 2.25,
+      "zone": "normal"
+    },
+    {
+      "id": 142,
+      "aisle": 3,
+      "side": "R",
+      "bay": 1,
+      "level": 0,
+      "x": 18,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 143,
+      "aisle": 3,
+      "side": "R",
+      "bay": 1,
+      "level": 1,
+      "x": 18,
+      "z": 3.75,
+      "zone": "normal"
+    },
+    {
+      "id": 144,
+      "aisle": 3,
+      "side": "R",
+      "bay": 2,
+      "level": 0,
+      "x": 18,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 145,
+      "aisle": 3,
+      "side": "R",
+      "bay": 2,
+      "level": 1,
+      "x": 18,
+      "z": 5.25,
+      "zone": "normal"
+    },
+    {
+      "id": 146,
+      "aisle": 3,
+      "side": "R",
+      "bay": 3,
+      "level": 0,
+      "x": 18,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 147,
+      "aisle": 3,
+      "side": "R",
+      "bay": 3,
+      "level": 1,
+      "x": 18,
+      "z": 6.75,
+      "zone": "normal"
+    },
+    {
+      "id": 148,
+      "aisle": 3,
+      "side": "R",
+      "bay": 4,
+      "level": 0,
+      "x": 18,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 149,
+      "aisle": 3,
+      "side": "R",
+      "bay": 4,
+      "level": 1,
+      "x": 18,
+      "z": 8.25,
+      "zone": "normal"
+    },
+    {
+      "id": 150,
+      "aisle": 3,
+      "side": "R",
+      "bay": 5,
+      "level": 0,
+      "x": 18,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 151,
+      "aisle": 3,
+      "side": "R",
+      "bay": 5,
+      "level": 1,
+      "x": 18,
+      "z": 9.75,
+      "zone": "normal"
+    },
+    {
+      "id": 152,
+      "aisle": 3,
+      "side": "R",
+      "bay": 6,
+      "level": 0,
+      "x": 18,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 153,
+      "aisle": 3,
+      "side": "R",
+      "bay": 6,
+      "level": 1,
+      "x": 18,
+      "z": 11.25,
+      "zone": "normal"
+    },
+    {
+      "id": 154,
+      "aisle": 3,
+      "side": "R",
+      "bay": 7,
+      "level": 0,
+      "x": 18,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 155,
+      "aisle": 3,
+      "side": "R",
+      "bay": 7,
+      "level": 1,
+      "x": 18,
+      "z": 12.75,
+      "zone": "normal"
+    },
+    {
+      "id": 156,
+      "aisle": 3,
+      "side": "R",
+      "bay": 8,
+      "level": 0,
+      "x": 18,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 157,
+      "aisle": 3,
+      "side": "R",
+      "bay": 8,
+      "level": 1,
+      "x": 18,
+      "z": 14.25,
+      "zone": "normal"
+    },
+    {
+      "id": 158,
+      "aisle": 3,
+      "side": "R",
+      "bay": 9,
+      "level": 0,
+      "x": 18,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 159,
+      "aisle": 3,
+      "side": "R",
+      "bay": 9,
+      "level": 1,
+      "x": 18,
+      "z": 15.75,
+      "zone": "normal"
+    },
+    {
+      "id": 160,
+      "aisle": 4,
+      "side": "L",
+      "bay": 0,
+      "level": 0,
+      "x": 23,
+      "z": 2.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 161,
+      "aisle": 4,
+      "side": "L",
+      "bay": 0,
+      "level": 1,
+      "x": 23,
+      "z": 2.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 162,
+      "aisle": 4,
+      "side": "L",
+      "bay": 1,
+      "level": 0,
+      "x": 23,
+      "z": 3.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 163,
+      "aisle": 4,
+      "side": "L",
+      "bay": 1,
+      "level": 1,
+      "x": 23,
+      "z": 3.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 164,
+      "aisle": 4,
+      "side": "L",
+      "bay": 2,
+      "level": 0,
+      "x": 23,
+      "z": 5.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 165,
+      "aisle": 4,
+      "side": "L",
+      "bay": 2,
+      "level": 1,
+      "x": 23,
+      "z": 5.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 166,
+      "aisle": 4,
+      "side": "L",
+      "bay": 3,
+      "level": 0,
+      "x": 23,
+      "z": 6.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 167,
+      "aisle": 4,
+      "side": "L",
+      "bay": 3,
+      "level": 1,
+      "x": 23,
+      "z": 6.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 168,
+      "aisle": 4,
+      "side": "L",
+      "bay": 4,
+      "level": 0,
+      "x": 23,
+      "z": 8.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 169,
+      "aisle": 4,
+      "side": "L",
+      "bay": 4,
+      "level": 1,
+      "x": 23,
+      "z": 8.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 170,
+      "aisle": 4,
+      "side": "L",
+      "bay": 5,
+      "level": 0,
+      "x": 23,
+      "z": 9.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 171,
+      "aisle": 4,
+      "side": "L",
+      "bay": 5,
+      "level": 1,
+      "x": 23,
+      "z": 9.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 172,
+      "aisle": 4,
+      "side": "L",
+      "bay": 6,
+      "level": 0,
+      "x": 23,
+      "z": 11.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 173,
+      "aisle": 4,
+      "side": "L",
+      "bay": 6,
+      "level": 1,
+      "x": 23,
+      "z": 11.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 174,
+      "aisle": 4,
+      "side": "L",
+      "bay": 7,
+      "level": 0,
+      "x": 23,
+      "z": 12.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 175,
+      "aisle": 4,
+      "side": "L",
+      "bay": 7,
+      "level": 1,
+      "x": 23,
+      "z": 12.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 176,
+      "aisle": 4,
+      "side": "L",
+      "bay": 8,
+      "level": 0,
+      "x": 23,
+      "z": 14.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 177,
+      "aisle": 4,
+      "side": "L",
+      "bay": 8,
+      "level": 1,
+      "x": 23,
+      "z": 14.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 178,
+      "aisle": 4,
+      "side": "L",
+      "bay": 9,
+      "level": 0,
+      "x": 23,
+      "z": 15.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 179,
+      "aisle": 4,
+      "side": "L",
+      "bay": 9,
+      "level": 1,
+      "x": 23,
+      "z": 15.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 180,
+      "aisle": 4,
+      "side": "R",
+      "bay": 0,
+      "level": 0,
+      "x": 23,
+      "z": 2.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 181,
+      "aisle": 4,
+      "side": "R",
+      "bay": 0,
+      "level": 1,
+      "x": 23,
+      "z": 2.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 182,
+      "aisle": 4,
+      "side": "R",
+      "bay": 1,
+      "level": 0,
+      "x": 23,
+      "z": 3.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 183,
+      "aisle": 4,
+      "side": "R",
+      "bay": 1,
+      "level": 1,
+      "x": 23,
+      "z": 3.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 184,
+      "aisle": 4,
+      "side": "R",
+      "bay": 2,
+      "level": 0,
+      "x": 23,
+      "z": 5.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 185,
+      "aisle": 4,
+      "side": "R",
+      "bay": 2,
+      "level": 1,
+      "x": 23,
+      "z": 5.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 186,
+      "aisle": 4,
+      "side": "R",
+      "bay": 3,
+      "level": 0,
+      "x": 23,
+      "z": 6.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 187,
+      "aisle": 4,
+      "side": "R",
+      "bay": 3,
+      "level": 1,
+      "x": 23,
+      "z": 6.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 188,
+      "aisle": 4,
+      "side": "R",
+      "bay": 4,
+      "level": 0,
+      "x": 23,
+      "z": 8.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 189,
+      "aisle": 4,
+      "side": "R",
+      "bay": 4,
+      "level": 1,
+      "x": 23,
+      "z": 8.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 190,
+      "aisle": 4,
+      "side": "R",
+      "bay": 5,
+      "level": 0,
+      "x": 23,
+      "z": 9.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 191,
+      "aisle": 4,
+      "side": "R",
+      "bay": 5,
+      "level": 1,
+      "x": 23,
+      "z": 9.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 192,
+      "aisle": 4,
+      "side": "R",
+      "bay": 6,
+      "level": 0,
+      "x": 23,
+      "z": 11.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 193,
+      "aisle": 4,
+      "side": "R",
+      "bay": 6,
+      "level": 1,
+      "x": 23,
+      "z": 11.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 194,
+      "aisle": 4,
+      "side": "R",
+      "bay": 7,
+      "level": 0,
+      "x": 23,
+      "z": 12.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 195,
+      "aisle": 4,
+      "side": "R",
+      "bay": 7,
+      "level": 1,
+      "x": 23,
+      "z": 12.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 196,
+      "aisle": 4,
+      "side": "R",
+      "bay": 8,
+      "level": 0,
+      "x": 23,
+      "z": 14.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 197,
+      "aisle": 4,
+      "side": "R",
+      "bay": 8,
+      "level": 1,
+      "x": 23,
+      "z": 14.25,
+      "zone": "fragile"
+    },
+    {
+      "id": 198,
+      "aisle": 4,
+      "side": "R",
+      "bay": 9,
+      "level": 0,
+      "x": 23,
+      "z": 15.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 199,
+      "aisle": 4,
+      "side": "R",
+      "bay": 9,
+      "level": 1,
+      "x": 23,
+      "z": 15.75,
+      "zone": "fragile"
+    },
+    {
+      "id": 200,
+      "aisle": 5,
+      "side": "L",
+      "bay": 0,
+      "level": 0,
+      "x": 28,
+      "z": 2.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 201,
+      "aisle": 5,
+      "side": "L",
+      "bay": 0,
+      "level": 1,
+      "x": 28,
+      "z": 2.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 202,
+      "aisle": 5,
+      "side": "L",
+      "bay": 1,
+      "level": 0,
+      "x": 28,
+      "z": 3.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 203,
+      "aisle": 5,
+      "side": "L",
+      "bay": 1,
+      "level": 1,
+      "x": 28,
+      "z": 3.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 204,
+      "aisle": 5,
+      "side": "L",
+      "bay": 2,
+      "level": 0,
+      "x": 28,
+      "z": 5.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 205,
+      "aisle": 5,
+      "side": "L",
+      "bay": 2,
+      "level": 1,
+      "x": 28,
+      "z": 5.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 206,
+      "aisle": 5,
+      "side": "L",
+      "bay": 3,
+      "level": 0,
+      "x": 28,
+      "z": 6.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 207,
+      "aisle": 5,
+      "side": "L",
+      "bay": 3,
+      "level": 1,
+      "x": 28,
+      "z": 6.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 208,
+      "aisle": 5,
+      "side": "L",
+      "bay": 4,
+      "level": 0,
+      "x": 28,
+      "z": 8.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 209,
+      "aisle": 5,
+      "side": "L",
+      "bay": 4,
+      "level": 1,
+      "x": 28,
+      "z": 8.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 210,
+      "aisle": 5,
+      "side": "L",
+      "bay": 5,
+      "level": 0,
+      "x": 28,
+      "z": 9.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 211,
+      "aisle": 5,
+      "side": "L",
+      "bay": 5,
+      "level": 1,
+      "x": 28,
+      "z": 9.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 212,
+      "aisle": 5,
+      "side": "L",
+      "bay": 6,
+      "level": 0,
+      "x": 28,
+      "z": 11.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 213,
+      "aisle": 5,
+      "side": "L",
+      "bay": 6,
+      "level": 1,
+      "x": 28,
+      "z": 11.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 214,
+      "aisle": 5,
+      "side": "L",
+      "bay": 7,
+      "level": 0,
+      "x": 28,
+      "z": 12.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 215,
+      "aisle": 5,
+      "side": "L",
+      "bay": 7,
+      "level": 1,
+      "x": 28,
+      "z": 12.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 216,
+      "aisle": 5,
+      "side": "L",
+      "bay": 8,
+      "level": 0,
+      "x": 28,
+      "z": 14.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 217,
+      "aisle": 5,
+      "side": "L",
+      "bay": 8,
+      "level": 1,
+      "x": 28,
+      "z": 14.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 218,
+      "aisle": 5,
+      "side": "L",
+      "bay": 9,
+      "level": 0,
+      "x": 28,
+      "z": 15.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 219,
+      "aisle": 5,
+      "side": "L",
+      "bay": 9,
+      "level": 1,
+      "x": 28,
+      "z": 15.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 220,
+      "aisle": 5,
+      "side": "R",
+      "bay": 0,
+      "level": 0,
+      "x": 28,
+      "z": 2.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 221,
+      "aisle": 5,
+      "side": "R",
+      "bay": 0,
+      "level": 1,
+      "x": 28,
+      "z": 2.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 222,
+      "aisle": 5,
+      "side": "R",
+      "bay": 1,
+      "level": 0,
+      "x": 28,
+      "z": 3.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 223,
+      "aisle": 5,
+      "side": "R",
+      "bay": 1,
+      "level": 1,
+      "x": 28,
+      "z": 3.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 224,
+      "aisle": 5,
+      "side": "R",
+      "bay": 2,
+      "level": 0,
+      "x": 28,
+      "z": 5.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 225,
+      "aisle": 5,
+      "side": "R",
+      "bay": 2,
+      "level": 1,
+      "x": 28,
+      "z": 5.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 226,
+      "aisle": 5,
+      "side": "R",
+      "bay": 3,
+      "level": 0,
+      "x": 28,
+      "z": 6.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 227,
+      "aisle": 5,
+      "side": "R",
+      "bay": 3,
+      "level": 1,
+      "x": 28,
+      "z": 6.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 228,
+      "aisle": 5,
+      "side": "R",
+      "bay": 4,
+      "level": 0,
+      "x": 28,
+      "z": 8.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 229,
+      "aisle": 5,
+      "side": "R",
+      "bay": 4,
+      "level": 1,
+      "x": 28,
+      "z": 8.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 230,
+      "aisle": 5,
+      "side": "R",
+      "bay": 5,
+      "level": 0,
+      "x": 28,
+      "z": 9.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 231,
+      "aisle": 5,
+      "side": "R",
+      "bay": 5,
+      "level": 1,
+      "x": 28,
+      "z": 9.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 232,
+      "aisle": 5,
+      "side": "R",
+      "bay": 6,
+      "level": 0,
+      "x": 28,
+      "z": 11.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 233,
+      "aisle": 5,
+      "side": "R",
+      "bay": 6,
+      "level": 1,
+      "x": 28,
+      "z": 11.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 234,
+      "aisle": 5,
+      "side": "R",
+      "bay": 7,
+      "level": 0,
+      "x": 28,
+      "z": 12.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 235,
+      "aisle": 5,
+      "side": "R",
+      "bay": 7,
+      "level": 1,
+      "x": 28,
+      "z": 12.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 236,
+      "aisle": 5,
+      "side": "R",
+      "bay": 8,
+      "level": 0,
+      "x": 28,
+      "z": 14.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 237,
+      "aisle": 5,
+      "side": "R",
+      "bay": 8,
+      "level": 1,
+      "x": 28,
+      "z": 14.25,
+      "zone": "hazard"
+    },
+    {
+      "id": 238,
+      "aisle": 5,
+      "side": "R",
+      "bay": 9,
+      "level": 0,
+      "x": 28,
+      "z": 15.75,
+      "zone": "hazard"
+    },
+    {
+      "id": 239,
+      "aisle": 5,
+      "side": "R",
+      "bay": 9,
+      "level": 1,
+      "x": 28,
+      "z": 15.75,
+      "zone": "hazard"
+    }
+  ]
+}
