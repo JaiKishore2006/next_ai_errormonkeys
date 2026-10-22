@@ -99,10 +99,21 @@ export function renderResultsPanel(container) {
             </button>
           </div>
 
-          <button id="baseline-btn" class="btn btn-secondary btn-block" title="Load automated baseline slotting solution">
-            <span class="btn-icon" aria-hidden="true">⚙️</span>
-            Load Baseline Assignment
-          </button>
+          <div class="btn-grid-row">
+            <button id="preview-baseline-btn" class="btn ${state.isPreviewingBaseline ? 'btn-amber' : 'btn-outline'}" title="Temporarily preview automated baseline assignment without altering your layout">
+              <span class="btn-icon" aria-hidden="true">${state.isPreviewingBaseline ? '👁️' : '👁️‍🗨️'}</span>
+              ${state.isPreviewingBaseline ? 'Exit Preview' : 'Preview Baseline'}
+            </button>
+            <button id="apply-baseline-btn" class="btn btn-secondary" title="Apply automated baseline solution to your working layout">
+              <span class="btn-icon" aria-hidden="true">⚙️</span>
+              Apply Baseline
+            </button>
+          </div>
+          ${state.isPreviewingBaseline ? `
+            <div class="preview-active-pill" role="status">
+              <span>👁️ Showing temporary baseline preview</span>
+            </div>
+          ` : ''}
         </div>
 
         <div class="metric-source-notice">
@@ -140,10 +151,17 @@ export function renderResultsPanel(container) {
       });
     }
 
-    const baselineBtn = container.querySelector('#baseline-btn');
-    if (baselineBtn) {
-      baselineBtn.addEventListener('click', () => {
-        store.loadBaseline();
+    const previewBtn = container.querySelector('#preview-baseline-btn');
+    if (previewBtn) {
+      previewBtn.addEventListener('click', () => {
+        store.previewBaseline(!state.isPreviewingBaseline);
+      });
+    }
+
+    const applyBtn = container.querySelector('#apply-baseline-btn');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', () => {
+        store.applyBaseline();
       });
     }
   };

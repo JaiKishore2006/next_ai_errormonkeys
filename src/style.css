@@ -1286,3 +1286,16 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+
+.preview-active-pill {
+  background-color: var(--amber-bg-subtle);
+  border: 1px dashed var(--amber-500);
+  color: var(--amber-400);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 4px;
+  text-align: center;
+  margin-top: 6px;
+}
+

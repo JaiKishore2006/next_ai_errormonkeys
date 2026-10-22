@@ -1,9 +1,42 @@
 /**
- * Shelf Shuffle - Central State Store (Person C)
+ * Shelf Shuffle - Central State Management (Person C)
  * 
- * Manages game progression, move budget, optimizer metrics display,
- * cost analysis variables, and UI status banners.
- * All metrics default to clearly labeled mock data until Person B's engine connects.
+ * Tracks warehouse level, assignments, routing method, move budget,
+ * time/wage operational parameters, and optimizer metrics.
+ * 
+ * Prevents accidental mutation of originalAssignment via Object.freeze,
+ * cleanly separates working player assignments from temporary baseline previews,
+ * and provides targeted event subscriptions to prevent unnecessary rerenders.
+ * 
+ * --------------------------------------------------------------------------
+ * USAGE EXAMPLES:
+ * 
+ * // 1. Read state and active assignment:
+ * import { store } from './state.js';
+ * const { level, movesUsed, movesLimit, wage, speed, days } = store.getState();
+ * const activeAssignment = store.getEffectiveAssignment();
+ * 
+ * // 2. Update state:
+ * store.moveProduct(productId, targetSlotId);
+ * store.updateConfig({ wage: 28.0, speed: 1.2, costPerMove: 5.0 });
+ * store.setMethod('optimal'); // 's-shape' | 'optimal' | 'midpoint' | 'largest-gap'
+ * 
+ * // 3. Subscribe to targeted events:
+ * const unsub = store.on('assignment-changed', (assignment, meta) => {
+ *   console.log('Assignment updated. Is preview?', meta.isPreview);
+ * });
+ * const unsubRun = store.on('run-finished', (metrics) => {
+ *   console.log('Evaluation finished:', metrics);
+ * });
+ * 
+ * // 4. Safe initialization from loaded JSON datasets:
+ * store.initFromData({
+ *   products: [{ id: 0, name: 'Item A' }],
+ *   originalAssignment: [12, 45, 88],
+ *   baseline: [0, 1, 2],
+ *   month: '2025-01'
+ * });
+ * --------------------------------------------------------------------------
  */
 
 export const LEVELS = [
@@ -48,120 +81,277 @@ export const LEVELS = [
   }
 ];
 
-const initialState = {
-  currentLevelId: 1,
-  movesUsed: 0,
-  moveHistory: [],
-  metrics: {
-    // Clearly marked dev mock data until Person B engine delivers live calculations
-    originalDistance: 1420.5,
-    playerDistance: 1264.0,
-    baselineDistance: 1136.4,
-    savingsPct: 11.0,
-    isMockData: true,
-    lastCalculatedAt: new Date().toISOString()
-  },
-  cost: {
-    hourlyWage: 25.00,
-    dailyOrders: 180,
-    workingDaysPerYear: 260,
-    walkingSpeedMps: 1.2,
-    pickTimePerItemSec: 12
-  },
-  viewport: {
-    cameraPreset: 'isometric', // 'isometric' | 'top-down' | 'aisle'
-    colorMode: 'velocity',     // 'velocity' | 'category' | 'zone'
-    selectedSlot: null         // { slotId, aisle, bay, level, product }
-  },
-  uiStatus: {
-    status: 'ready',           // 'ready' | 'loading' | 'error' | 'empty'
-    message: '',
-    isMockDataActive: true,
-    engineConnected: false,
-    sceneConnected: false
-  }
-};
+// Initial mock assignment placeholder: 240 warehouse slots, 40 sample SKUs
+const DEFAULT_SAMPLE_PRODUCTS_COUNT = 40;
+const defaultOriginalAssignment = Object.freeze(
+  Array.from({ length: DEFAULT_SAMPLE_PRODUCTS_COUNT }, (_, i) => (i * 5) % 240)
+);
+const defaultBaselineAssignment = Object.freeze(
+  Array.from({ length: DEFAULT_SAMPLE_PRODUCTS_COUNT }, (_, i) => i)
+);
 
-class Store {
+class StateStore {
   constructor() {
-    this.state = { ...initialState };
-    this.listeners = new Set();
+    this.events = new Map([
+      ['assignment-changed', new Set()],
+      ['level-changed', new Set()],
+      ['run-finished', new Set()],
+      ['state-changed', new Set()]
+    ]);
+
+    // General subscribers for backward compatibility
+    this.generalListeners = new Set();
+
+    this.state = {
+      // 1. Level & Rules Tracking
+      level: LEVELS[0],
+      currentLevelId: 1,
+      movesUsed: 0,
+      movesLimit: LEVELS[0].moveLimit,
+      moveHistory: [], // Undo stack: [{ previousAssignment, moveDesc, timestamp }]
+
+      // 2. Assignment Tracking (Contract: assignment[productId] = slotId)
+      // originalAssignment is frozen to prevent accidental mutation
+      originalAssignment: defaultOriginalAssignment,
+      assignment: [...defaultOriginalAssignment],
+      baseline: defaultBaselineAssignment,
+      isPreviewingBaseline: false, // Distinguishes player assignment from temporary baseline preview
+
+      // 3. Routing & Evaluation Parameters
+      method: 's-shape', // 's-shape' | 'optimal' | 'midpoint' | 'largest-gap'
+      month: 'base',     // 'base' | 'YYYY-MM'
+
+      // 4. Financial & Physical Operations Parameters (from CONTRACTS.md)
+      wage: 25.00,        // Hourly picker wage ($/hr)
+      speed: 1.2,         // Picker walking speed (m/s)
+      days: 260,          // Operating warehouse days per year
+      costPerMove: 5.00,  // Relocation handling cost ($/move)
+
+      // Backward-compatibility aliases for UI components
+      cost: {
+        hourlyWage: 25.00,
+        dailyOrders: 180,
+        workingDaysPerYear: 260,
+        walkingSpeedMps: 1.2,
+        pickTimePerItemSec: 12,
+        costPerMove: 5.00
+      },
+
+      // 5. Optimizer Metrics (No fake production metrics; null when unevaluated)
+      metrics: {
+        isEvaluated: false,
+        isMockData: true, // Clearly flagged as developer mock data
+        originalDistance: 1420.5,
+        playerDistance: 1264.0,
+        baselineDistance: 1136.4,
+        savingsPct: 11.0,
+        runTimeSec: null,
+        lastCalculatedAt: new Date().toISOString()
+      },
+
+      // 6. Viewport & UI Status
+      viewport: {
+        cameraPreset: 'isometric', // 'isometric' | 'top-down' | 'aisle'
+        colorMode: 'velocity',     // 'velocity' | 'category' | 'zone'
+        selectedSlot: null
+      },
+      uiStatus: {
+        status: 'ready',
+        message: '',
+        isMockDataActive: true,
+        engineConnected: false,
+        sceneConnected: false
+      }
+    };
   }
 
+  // =========================================================================
+  // State Reading
+  // =========================================================================
+
+  /**
+   * Returns a snapshot of the current state.
+   */
   getState() {
     return this.state;
   }
 
-  subscribe(listener) {
-    this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
+  /**
+   * Returns the currently active effective assignment.
+   * If isPreviewingBaseline is true and baseline is present, returns baseline.
+   * Otherwise returns the player's active assignment.
+   */
+  getEffectiveAssignment() {
+    if (this.state.isPreviewingBaseline && this.state.baseline) {
+      return this.state.baseline;
+    }
+    return this.state.assignment;
   }
 
-  notify() {
-    for (const listener of this.listeners) {
+  /**
+   * Returns current active level object.
+   */
+  getCurrentLevel() {
+    return this.state.level || LEVELS[0];
+  }
+
+  // =========================================================================
+  // Event Subscription & Notification
+  // =========================================================================
+
+  /**
+   * Subscribe to specific targeted events:
+   * - 'assignment-changed': (assignment, { isPreview, moveDesc })
+   * - 'level-changed': (level, movesLimit)
+   * - 'run-finished': (metrics)
+   * - 'state-changed': (state, changedKey)
+   * 
+   * @param {string} eventName
+   * @param {Function} callback
+   * @returns {Function} Unsubscribe function
+   */
+  on(eventName, callback) {
+    if (!this.events.has(eventName)) {
+      this.events.set(eventName, new Set());
+    }
+    this.events.get(eventName).add(callback);
+    return () => this.events.get(eventName).delete(callback);
+  }
+
+  /**
+   * General store subscriber (called on any state mutation).
+   * @param {Function} listener
+   * @returns {Function} Unsubscribe function
+   */
+  subscribe(listener) {
+    this.generalListeners.add(listener);
+    return () => this.generalListeners.delete(listener);
+  }
+
+  emit(eventName, payload) {
+    const listeners = this.events.get(eventName);
+    if (listeners) {
+      for (const cb of listeners) {
+        try {
+          cb(payload, this.state);
+        } catch (err) {
+          console.error(`[Store] Error in listener for event '${eventName}':`, err);
+        }
+      }
+    }
+
+    // Always notify general subscribers for component reactivity
+    for (const listener of this.generalListeners) {
       try {
-        listener(this.state);
+        listener(this.state, eventName);
       } catch (err) {
-        console.error('[Store] Error in subscriber callback:', err);
+        console.error('[Store] Error in general subscriber:', err);
       }
     }
   }
 
-  setState(updater) {
-    const nextPartial = typeof updater === 'function' ? updater(this.state) : updater;
+  setState(partial) {
+    const next = typeof partial === 'function' ? partial(this.state) : partial;
     this.state = {
       ...this.state,
-      ...nextPartial
+      ...next
     };
-    this.notify();
+    this.emit('state-changed', this.state);
   }
 
-  // --- Action Helpers ---
+  // =========================================================================
+  // Safe Initialization from Data
+  // =========================================================================
 
-  setLevel(levelId) {
-    const level = LEVELS.find(l => l.id === levelId);
-    if (!level) return;
+  /**
+   * Safely initializes store from loaded JSON datasets.
+   * Freezes originalAssignment to protect against accidental mutation.
+   * 
+   * @param {Object} data
+   * @param {Array} data.originalAssignment - Array mapping productId to slotId
+   * @param {Array} [data.baseline] - Automated baseline assignment array
+   * @param {string} [data.month] - 'base' or 'YYYY-MM'
+   */
+  initFromData({ originalAssignment, baseline = null, month = 'base' } = {}) {
+    if (!Array.isArray(originalAssignment)) {
+      throw new TypeError('[Store] originalAssignment must be an Array where originalAssignment[productId] = slotId');
+    }
 
-    this.setState({
-      currentLevelId: levelId,
+    // Freeze originalAssignment to strictly protect from in-place mutations
+    const frozenOriginal = Object.freeze([...originalAssignment]);
+    const safeBaseline = Array.isArray(baseline) ? Object.freeze([...baseline]) : null;
+
+    this.state = {
+      ...this.state,
+      originalAssignment: frozenOriginal,
+      assignment: [...frozenOriginal], // Fresh mutable copy for player
+      baseline: safeBaseline,
+      isPreviewingBaseline: false,
+      month,
       movesUsed: 0,
       moveHistory: [],
       uiStatus: {
         ...this.state.uiStatus,
         status: 'ready',
-        message: `Switched to ${level.name}`
+        message: `Loaded dataset successfully for period '${month}'.`
       }
-    });
+    };
+
+    this.emit('assignment-changed', this.state.assignment, { isPreview: false, source: 'init' });
+    this.emit('state-changed', this.state);
   }
 
-  getCurrentLevel() {
-    return LEVELS.find(l => l.id === this.state.currentLevelId) || LEVELS[0];
-  }
+  // =========================================================================
+  // Assignment & Move Management
+  // =========================================================================
 
-  recordMove(moveDesc = 'Swapped slots') {
-    const level = this.getCurrentLevel();
-    if (this.state.movesUsed >= level.moveLimit) {
-      this.setState({
-        uiStatus: {
-          ...this.state.uiStatus,
-          status: 'error',
-          message: `Move limit reached (${level.moveLimit} moves). Reset or undo to try another layout.`
-        }
-      });
+  /**
+   * Moves product to a target slot or swaps with whatever product is at targetSlotId.
+   * Empty warehouse slots are permitted.
+   */
+  moveProduct(productId, targetSlotId, desc = '') {
+    if (this.state.movesUsed >= this.state.movesLimit) {
+      this.setUIStatus('error', `Move limit reached (${this.state.movesLimit} moves). Reset or undo.`);
       return false;
     }
 
-    const prevMoves = this.state.movesUsed;
-    const history = [...this.state.moveHistory, { moveNum: prevMoves + 1, desc: moveDesc }];
+    const prevAssignment = [...this.state.assignment];
+    const newAssignment = [...this.state.assignment];
 
-    // Simulate minor metric improvement with mock data
-    const simulatedDist = Math.max(900, Math.round((this.state.metrics.playerDistance - 18.5) * 10) / 10);
-    const orig = this.state.metrics.originalDistance;
-    const savings = Math.max(0, Math.round(((orig - simulatedDist) / orig) * 1000) / 10);
+    const currentSlot = newAssignment[productId];
+    // Check if another product currently occupies targetSlotId (allowing empty slots)
+    const occupyingProductIdx = newAssignment.findIndex(s => s === targetSlotId);
 
-    this.setState({
-      movesUsed: prevMoves + 1,
-      moveHistory: history,
+    if (occupyingProductIdx !== -1 && occupyingProductIdx !== productId) {
+      // Swap places
+      newAssignment[occupyingProductIdx] = currentSlot;
+      newAssignment[productId] = targetSlotId;
+    } else {
+      // Direct move into empty slot
+      newAssignment[productId] = targetSlotId;
+    }
+
+    const moveDescription = desc || `Moved SKU #${productId} to Slot #${targetSlotId}`;
+    const newMovesUsed = this.state.movesUsed + 1;
+
+    // Simulate minor progress in mock mode (strictly labeled as mock)
+    const currentDist = this.state.metrics.playerDistance || 1264.0;
+    const simulatedDist = Math.max(850, Math.round((currentDist - 15.0) * 10) / 10);
+    const origDist = this.state.metrics.originalDistance || 1420.5;
+    const savings = Math.max(0, Math.round(((origDist - simulatedDist) / origDist) * 1000) / 10);
+
+    this.state = {
+      ...this.state,
+      assignment: newAssignment,
+      movesUsed: newMovesUsed,
+      moveHistory: [
+        ...this.state.moveHistory,
+        {
+          previousAssignment: prevAssignment,
+          moveDesc: moveDescription,
+          timestamp: Date.now()
+        }
+      ],
       metrics: {
         ...this.state.metrics,
         playerDistance: simulatedDist,
@@ -171,36 +361,39 @@ class Store {
       uiStatus: {
         ...this.state.uiStatus,
         status: 'ready',
-        message: `Move ${prevMoves + 1} recorded: ${moveDesc}`
+        message: moveDescription
       }
-    });
+    };
+
+    this.emit('assignment-changed', newAssignment, { isPreview: false, moveDesc: moveDescription });
     return true;
   }
 
+  /**
+   * Reverts the most recent assignment change.
+   */
   undoMove() {
     if (this.state.movesUsed <= 0 || this.state.moveHistory.length === 0) {
-      this.setState({
-        uiStatus: {
-          ...this.state.uiStatus,
-          status: 'ready',
-          message: 'No moves to undo.'
-        }
-      });
+      this.setUIStatus('ready', 'No moves to undo.');
       return false;
     }
 
-    const newHistory = [...this.state.moveHistory];
-    const undone = newHistory.pop();
-    const newMoves = this.state.movesUsed - 1;
+    const history = [...this.state.moveHistory];
+    const lastStep = history.pop();
+    const restoredAssignment = lastStep.previousAssignment;
+    const newMovesUsed = this.state.movesUsed - 1;
 
-    // Slightly revert simulated distance
-    const revertedDist = Math.min(this.state.metrics.originalDistance, Math.round((this.state.metrics.playerDistance + 18.5) * 10) / 10);
-    const orig = this.state.metrics.originalDistance;
-    const savings = Math.max(0, Math.round(((orig - revertedDist) / orig) * 1000) / 10);
+    // Adjust mock distance metric
+    const currentDist = this.state.metrics.playerDistance || 1264.0;
+    const origDist = this.state.metrics.originalDistance || 1420.5;
+    const revertedDist = Math.min(origDist, Math.round((currentDist + 15.0) * 10) / 10);
+    const savings = Math.max(0, Math.round(((origDist - revertedDist) / origDist) * 1000) / 10);
 
-    this.setState({
-      movesUsed: newMoves,
-      moveHistory: newHistory,
+    this.state = {
+      ...this.state,
+      assignment: restoredAssignment,
+      movesUsed: newMovesUsed,
+      moveHistory: history,
       metrics: {
         ...this.state.metrics,
         playerDistance: revertedDist,
@@ -209,16 +402,25 @@ class Store {
       uiStatus: {
         ...this.state.uiStatus,
         status: 'ready',
-        message: `Undid: ${undone.desc}`
+        message: `Undid: ${lastStep.moveDesc}`
       }
-    });
+    };
+
+    this.emit('assignment-changed', restoredAssignment, { isPreview: false, source: 'undo' });
     return true;
   }
 
+  /**
+   * Resets the player assignment back to originalAssignment.
+   * Clones from the frozen originalAssignment.
+   */
   resetLayout() {
-    this.setState({
+    this.state = {
+      ...this.state,
+      assignment: [...this.state.originalAssignment],
       movesUsed: 0,
       moveHistory: [],
+      isPreviewingBaseline: false,
       metrics: {
         ...this.state.metrics,
         playerDistance: this.state.metrics.originalDistance,
@@ -230,11 +432,48 @@ class Store {
         status: 'ready',
         message: 'Layout reset to initial arrangement.'
       }
+    };
+
+    this.emit('assignment-changed', this.state.assignment, { isPreview: false, source: 'reset' });
+  }
+
+  // =========================================================================
+  // Baseline Preview vs. Player Assignment
+  // =========================================================================
+
+  /**
+   * Temporarily previews the automated baseline assignment without altering
+   * the player's actual assignment.
+   * 
+   * @param {boolean} show - Whether to show the baseline preview
+   */
+  previewBaseline(show = true) {
+    if (!this.state.baseline) {
+      this.setUIStatus('error', 'No baseline assignment loaded to preview.');
+      return;
+    }
+
+    this.state.isPreviewingBaseline = Boolean(show);
+    const effective = this.getEffectiveAssignment();
+    this.emit('assignment-changed', effective, {
+      isPreview: this.state.isPreviewingBaseline,
+      source: 'baseline-preview'
     });
   }
 
-  loadBaseline() {
-    this.setState({
+  /**
+   * Adopts the baseline assignment permanently into player assignment.
+   */
+  applyBaseline() {
+    if (!this.state.baseline) {
+      this.setUIStatus('error', 'No baseline assignment available.');
+      return;
+    }
+
+    this.state = {
+      ...this.state,
+      assignment: [...this.state.baseline],
+      isPreviewingBaseline: false,
       metrics: {
         ...this.state.metrics,
         playerDistance: this.state.metrics.baselineDistance,
@@ -244,22 +483,140 @@ class Store {
       uiStatus: {
         ...this.state.uiStatus,
         status: 'ready',
-        message: 'Loaded automated baseline assignment.'
+        message: 'Applied automated baseline assignment.'
+      }
+    };
+
+    this.emit('assignment-changed', this.state.assignment, { isPreview: false, source: 'apply-baseline' });
+  }
+
+  // Backward compatibility alias for UI button
+  loadBaseline() {
+    this.applyBaseline();
+  }
+
+  // =========================================================================
+  // Level Management
+  // =========================================================================
+
+  setLevel(levelId) {
+    const nextLevel = LEVELS.find(l => l.id === levelId);
+    if (!nextLevel) return;
+
+    this.state = {
+      ...this.state,
+      level: nextLevel,
+      currentLevelId: levelId,
+      movesUsed: 0,
+      movesLimit: nextLevel.moveLimit,
+      moveHistory: [],
+      uiStatus: {
+        ...this.state.uiStatus,
+        status: 'ready',
+        message: `Switched to ${nextLevel.name}`
+      }
+    };
+
+    this.emit('level-changed', nextLevel);
+  }
+
+  // =========================================================================
+  // Configuration & Parameter Updates
+  // =========================================================================
+
+  setMethod(method) {
+    const valid = ['s-shape', 'optimal', 'midpoint', 'largest-gap'];
+    if (!valid.includes(method)) {
+      console.warn(`[Store] Unknown method '${method}'. Valid methods:`, valid);
+      return;
+    }
+    this.setState({ method });
+  }
+
+  setMonth(month) {
+    this.setState({ month });
+  }
+
+  updateConfig(updates = {}) {
+    const next = {};
+    if (typeof updates.wage === 'number') next.wage = updates.wage;
+    if (typeof updates.speed === 'number') next.speed = updates.speed;
+    if (typeof updates.days === 'number') next.days = updates.days;
+    if (typeof updates.costPerMove === 'number') next.costPerMove = updates.costPerMove;
+
+    this.setState({
+      ...next,
+      cost: {
+        ...this.state.cost,
+        hourlyWage: next.wage ?? this.state.wage,
+        walkingSpeedMps: next.speed ?? this.state.speed,
+        workingDaysPerYear: next.days ?? this.state.days,
+        costPerMove: next.costPerMove ?? this.state.costPerMove
       }
     });
   }
 
+  // Backward-compatibility alias
   updateCost(key, value) {
     const num = parseFloat(value);
     if (isNaN(num) || num < 0) return;
 
-    this.setState({
-      cost: {
-        ...this.state.cost,
-        [key]: num
-      }
-    });
+    const keyMap = {
+      hourlyWage: 'wage',
+      walkingSpeedMps: 'speed',
+      workingDaysPerYear: 'days',
+      costPerMove: 'costPerMove'
+    };
+
+    const targetKey = keyMap[key] || key;
+    this.updateConfig({ [targetKey]: num });
   }
+
+  // =========================================================================
+  // Metrics & Run Reporting (Contract Guarded)
+  // =========================================================================
+
+  /**
+   * Sets real metrics calculated by Person B's engine.
+   * Never fabricates production results.
+   */
+  setEngineMetrics(evalResult) {
+    if (!evalResult || typeof evalResult.playerDistance !== 'number') {
+      console.warn('[Store] Invalid evaluation result passed to setEngineMetrics:', evalResult);
+      return;
+    }
+
+    const { playerDistance, originalDistance, baselineDistance, runTimeSec } = evalResult;
+    const orig = typeof originalDistance === 'number' ? originalDistance : (this.state.metrics.originalDistance || playerDistance);
+    const savings = orig > 0 ? Math.round(((orig - playerDistance) / orig) * 1000) / 10 : 0.0;
+
+    const newMetrics = {
+      isEvaluated: true,
+      isMockData: false,
+      playerDistance,
+      originalDistance: orig,
+      baselineDistance: baselineDistance ?? null,
+      savingsPct: savings,
+      runTimeSec: runTimeSec ?? null,
+      lastCalculatedAt: new Date().toISOString()
+    };
+
+    this.state = {
+      ...this.state,
+      metrics: newMetrics,
+      uiStatus: {
+        ...this.state.uiStatus,
+        status: 'ready',
+        message: `Evaluation completed (${playerDistance.toFixed(1)} m).`
+      }
+    };
+
+    this.emit('run-finished', newMetrics);
+  }
+
+  // =========================================================================
+  // Viewport & UI Status
+  // =========================================================================
 
   setCameraPreset(preset) {
     this.setState({
@@ -297,6 +654,14 @@ class Store {
       }
     });
   }
+
+  // Backward-compatibility wrapper for test move
+  recordMove(desc = 'Moved SKU') {
+    const selected = this.state.viewport.selectedSlot;
+    const productId = selected ? selected.slotId % DEFAULT_SAMPLE_PRODUCTS_COUNT : 0;
+    const nextSlot = (this.state.assignment[productId] + 2) % 240;
+    return this.moveProduct(productId, nextSlot, desc);
+  }
 }
 
-export const store = new Store();
+export const store = new StateStore();
