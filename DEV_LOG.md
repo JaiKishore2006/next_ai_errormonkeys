@@ -38,3 +38,15 @@ integration issues, AI assistance and rejected approaches.
 - **Build & Verification:**
   - `npm run build` succeeds cleanly with zero bundle errors.
 
+### 2026-10-22 — State Management Architecture (Prompt 5)
+- **Author:** Person C
+- **Completed:**
+  - Upgraded `src/state.js` to track all required core fields: `level`, `assignment`, `originalAssignment`, `baseline`, `method`, `movesUsed`, `movesLimit`, `month`, `wage`, `speed`, `days`, `costPerMove`.
+  - Added strict immutability protection for `originalAssignment` using `Object.freeze` to prevent accidental in-place mutation.
+  - Implemented `previewBaseline(show)` and `getEffectiveAssignment()` to clearly distinguish the working player assignment from temporary baseline previews without data corruption.
+  - Added targeted event emitter system (`store.on('assignment-changed' | 'level-changed' | 'run-finished' | 'state-changed')`) preventing unnecessary full-page rerenders.
+  - Implemented `initFromData()` for safe initialization from loaded JSON datasets.
+  - Strictly avoided fake production metrics by enforcing `isMockData: true` / `isEvaluated: false` and contract validation in `setEngineMetrics()`.
+  - Added comprehensive JSDoc usage documentation and test verification suite.
+
+
