@@ -4,10 +4,33 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>shelf-shuffle</title>
+    <meta name="description" content="Shelf Shuffle - Interactive Warehouse Digital Twin and Slotting Optimization Game" />
+    <title>Shelf Shuffle — Warehouse Digital Twin</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <!-- Top Application Header -->
+      <header id="top-header" role="banner"></header>
+
+      <!-- Central Tri-Pane Workspace -->
+      <div class="main-workspace" role="main">
+        <!-- Left Panel: Levels & Warehouse Rules -->
+        <nav id="left-panel" aria-label="Warehouse Levels and Rules"></nav>
+
+        <!-- Center: Warehouse Viewport & 3D Scene Mount Point -->
+        <main id="viewport-container" aria-label="Warehouse Simulation Viewport"></main>
+
+        <!-- Right Panel: Optimization Metrics, Move Budget & Action Controls -->
+        <aside id="right-panel" aria-label="Optimization Metrics and Controls"></aside>
+      </div>
+
+      <!-- Lower Panel: Cost Analysis & Labor ROI Sliders -->
+      <section id="cost-panel" aria-label="Financial Cost and ROI Projections"></section>
+
+      <!-- Notification Overlays & Toasts -->
+      <div id="status-banners-root" aria-live="polite"></div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
