@@ -23,7 +23,7 @@ export const LEVELS = [
       'Walking speed: 1.2 m/s • Pick time: 12 s/item',
       'Unlimited moves: freely test different bay arrangements'
     ],
-    targetSavings: '10%'
+    targetSavings: '5%'
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ export const LEVELS = [
       'Upper shelf (Level 1) is restricted to medium and light products',
       'Unlimited moves: refine placement while observing weight constraints'
     ],
-    targetSavings: '15%'
+    targetSavings: '6%'
   },
   {
     id: 3,
@@ -61,7 +61,7 @@ export const LEVELS = [
       'Strict budget: Maximum 10 moves allowed',
       'Prioritize relocating high-velocity items to maximize savings per move'
     ],
-    targetSavings: '20%'
+    targetSavings: '7%'
   },
   {
     id: 4,
@@ -81,7 +81,7 @@ export const LEVELS = [
       'Heavy products MUST be stored on bottom shelf (Level 0)',
       'Strict budget: Maximum 15 moves allowed'
     ],
-    targetSavings: '25%'
+    targetSavings: '7.5%'
   },
   {
     id: 5,
@@ -100,7 +100,7 @@ export const LEVELS = [
       'Monthly allocation: Exactly 5 moves per monthly cycle',
       'Anticipate demand shifts to minimize re-slotting churn'
     ],
-    targetSavings: '30%'
+    targetSavings: '8%'
   }
 ];
 
