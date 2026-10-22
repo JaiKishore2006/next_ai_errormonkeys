@@ -162,7 +162,7 @@ export function renderResultsPanel(container) {
         const effectiveAssignment = store.getEffectiveAssignment();
         const baseAssignment = state.baseline || effectiveAssignment;
         const rawOrders = state.orders || [];
-        const sampleBatch = rawOrders.slice(0, 8); // 8 sample orders for rapid smooth visual demo
+        const sampleBatch = rawOrders.slice(0, 4); // 4 sample orders for swift, responsive visual demo
 
         if (sampleBatch.length === 0) {
           store.setUIStatus('error', 'No order batch loaded.');
@@ -179,11 +179,11 @@ export function renderResultsPanel(container) {
         ).filter(r => r.length > 0);
 
         isReplaying = true;
-        store.setUIStatus('loading', 'Simulating 3D picker order fulfillment...');
+        store.setUIStatus('loading', 'Picker navigating aisles & picking orders...');
         update(store.getState());
 
         playOrders(playerRoutes, {
-          speed: 4,
+          speed: 6,
           ghost: true,
           ghostRoutes: ghostRoutes
         }).then(() => {

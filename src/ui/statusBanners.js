@@ -1,6 +1,6 @@
 /**
  * Status Banners & State Overlays Component
- * Renders loading indicators, error alerts, empty-data notifications, and mock-data notices.
+ * Renders non-blocking loading indicators, error alerts, empty-data notifications, and toast banners.
  */
 import { store } from '../state.js';
 
@@ -26,17 +26,17 @@ export function renderStatusBanners(container) {
     }
 
     if (uiStatus.status === 'loading') {
+      // Non-blocking toast with subtle animated spinner ring - does NOT cover 3D scene
       container.innerHTML = `
-        <div class="banner-overlay" role="alert" aria-busy="true">
-          <div class="banner-card loading-card">
-            <div class="spinner-ring" aria-hidden="true"></div>
-            <div class="banner-content">
-              <h3 class="banner-title">Optimization In Progress</h3>
-              <p class="banner-text">${uiStatus.message || 'Calculating picker travel routes & evaluation metrics...'}</p>
-            </div>
+        <div class="toast-banner toast-info" role="status" aria-live="polite" style="display: flex; align-items: center; gap: 10px; border-left: 3px solid #f59e0b; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);">
+          <span class="spinner-ring" style="width: 16px; height: 16px; border-width: 2px; flex-shrink: 0;" aria-hidden="true"></span>
+          <div class="toast-body" style="font-size: 12px; color: #f8fafc;">
+            <strong>Simulating:</strong> ${uiStatus.message || 'Calculating picker travel routes & evaluation metrics...'}
           </div>
+          <button class="toast-close-btn" aria-label="Dismiss message">✕</button>
         </div>
       `;
+      attachClose(container);
       return;
     }
 
