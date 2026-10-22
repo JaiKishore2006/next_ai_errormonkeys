@@ -4,14 +4,14 @@
  * move usage counter, and action buttons (Run the Day, Undo, Reset, Baseline).
  */
 import { store } from '../state.js';
+import { getRemainingMoves } from '../game/rules.js';
 
 export function renderResultsPanel(container) {
   const update = (state) => {
     const currentLevel = store.getCurrentLevel();
     const { metrics, movesUsed } = state;
-    const moveLimit = currentLevel.moveLimit;
-    const movesRemaining = Math.max(0, moveLimit - movesUsed);
-    const progressPct = Math.min(100, (movesUsed / moveLimit) * 100);
+    const remainingStatus = getRemainingMoves(currentLevel, movesUsed);
+    const progressPct = remainingStatus.limit ? Math.min(100, (movesUsed / remainingStatus.limit) * 100) : 0;
 
     const isPositiveSavings = metrics.savingsPct > 0;
     const savingsColorClass = isPositiveSavings ? 'text-emerald' : 'text-muted';
@@ -61,17 +61,25 @@ export function renderResultsPanel(container) {
         </div>
       </section>
 
-      <!-- Move Budget Tracker -->
+      <!-- Move Budget Tracker with Dynamic Status -->
       <section class="panel-section">
         <div class="move-budget-header">
           <span class="budget-label">Move Budget</span>
-          <span class="budget-count font-mono"><strong>${movesUsed}</strong> / ${moveLimit} used</span>
+          <span class="budget-count font-mono">
+            ${remainingStatus.isUnlimited 
+              ? `<strong>${movesUsed}</strong> moves (Unlimited)`
+              : `<strong>${movesUsed}</strong> / ${remainingStatus.limit} used`}
+          </span>
         </div>
-        <div class="progress-bar-track" role="progressbar" aria-valuenow="${movesUsed}" aria-valuemin="0" aria-valuemax="${moveLimit}">
-          <div class="progress-bar-fill ${movesUsed >= moveLimit ? 'progress-full' : ''}" style="width: ${progressPct}%"></div>
-        </div>
+        ${!remainingStatus.isUnlimited ? `
+          <div class="progress-bar-track" role="progressbar" aria-valuenow="${movesUsed}" aria-valuemin="0" aria-valuemax="${remainingStatus.limit}">
+            <div class="progress-bar-fill ${remainingStatus.isOverLimit ? 'progress-full' : remainingStatus.isLastMove ? 'progress-warning' : ''}" style="width: ${progressPct}%"></div>
+          </div>
+        ` : ''}
         <div class="budget-footer">
-          <span class="remaining-text">${movesRemaining} moves remaining in this level</span>
+          <span class="remaining-text ${remainingStatus.isOverLimit ? 'text-rose' : remainingStatus.isLastMove ? 'text-amber font-semibold' : ''}">
+            ${remainingStatus.label}
+          </span>
         </div>
       </section>
 

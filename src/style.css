@@ -752,6 +752,12 @@ html, body {
   background-color: var(--rose-500);
 }
 
+.progress-bar-fill.progress-warning {
+  background-color: var(--amber-400);
+  box-shadow: 0 0 8px var(--amber-glow);
+}
+
+
 .budget-footer {
   font-size: 11px;
   color: var(--text-muted);

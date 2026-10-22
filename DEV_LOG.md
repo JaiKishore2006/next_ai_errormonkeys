@@ -47,6 +47,25 @@ integration issues, AI assistance and rejected approaches.
   - Added targeted event emitter system (`store.on('assignment-changed' | 'level-changed' | 'run-finished' | 'state-changed')`) preventing unnecessary full-page rerenders.
   - Implemented `initFromData()` for safe initialization from loaded JSON datasets.
   - Strictly avoided fake production metrics by enforcing `isMockData: true` / `isEvaluated: false` and contract validation in `setEngineMetrics()`.
-  - Added comprehensive JSDoc usage documentation and test verification suite.
+- **Build & Verification:**
+  - `npm run build` succeeds cleanly with zero bundle errors.
+
+### 2026-10-22 — Level Configurations & Validation Rules Implementation
+- **Author:** Person C
+- **Completed:**
+  - Implemented the five agreed levels in `src/game/levels.js`:
+    - Level 1: Free Swaps (unrestricted).
+    - Level 2: Heavy on Low Shelves (Level 0 bottom shelf restriction).
+    - Level 3: Level 2 restriction + 10-move budget.
+    - Level 4: Level 2 restriction + Hazard Zone (Aisle 5) + Fragile Zone (Aisle 4) + 15-move budget.
+    - Level 5: Seasonal Demand with 5 moves/month allocation.
+  - Implemented move validation, swap validation, and remaining-moves tracking in `src/game/rules.js` with human-readable error messages.
+  - Added unit test suite in `src/game/rules.test.js` validating allowed moves, illegal moves, last permitted moves, and over-limit rejections.
+  - Updated `src/state.js`, `src/ui/levelNav.js`, and `src/ui/resultsPanel.js` with active level rules and remaining-move indicators.
+  - Verified contract adherence: Hazard zone is Aisle 5 and Fragile zone is Aisle 4. Reported mock layout mismatch from Person B's branch for team alignment.
+- **Verification:**
+  - `node src/game/rules.test.js`: All 20+ assertions passed.
+  - `npm run build`: Succeeded in 142ms.
+
 
 

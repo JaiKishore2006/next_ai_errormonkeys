@@ -39,47 +39,10 @@
  * --------------------------------------------------------------------------
  */
 
-export const LEVELS = [
-  {
-    id: 1,
-    name: 'Level 1: Fast-Moving Essentials',
-    subtitle: 'High-frequency slotting basics',
-    description: 'Rearrange high-velocity goods closer to the loading dock to reduce total picker walking distance.',
-    rules: [
-      'Loading dock is located at coordinates (0, 0)',
-      'Walking speed: 1.2 m/s • Pick time: 12 s/item',
-      'Target: slot top 10% high-velocity items in Aisles 0 & 1'
-    ],
-    moveLimit: 10,
-    targetSavings: '15%'
-  },
-  {
-    id: 2,
-    name: 'Level 2: Hazard Isolation',
-    subtitle: 'Safety zoning constraints',
-    description: 'Optimize travel routes while strictly complying with warehouse hazardous materials isolation.',
-    rules: [
-      'Hazard Zone is strictly restricted to Aisle 5',
-      'Hazardous items must NOT be stored in Aisles 0–4',
-      'Engine will reject illegal moves outside Aisle 5'
-    ],
-    moveLimit: 8,
-    targetSavings: '20%'
-  },
-  {
-    id: 3,
-    name: 'Level 3: Fragile & Affinity Pairings',
-    subtitle: 'Co-occurrence & delicate handling',
-    description: 'Group frequently ordered product pairs together while isolating fragile items in their designated zone.',
-    rules: [
-      'Fragile goods must be slotted in Aisle 4 only',
-      'Frequently co-ordered items should share adjacent bays',
-      'Heavy items restricted to lower shelf level 0'
-    ],
-    moveLimit: 12,
-    targetSavings: '25%'
-  }
-];
+import { LEVELS, getLevelById } from './game/levels.js';
+import { validateMove, validateSwap, getRemainingMoves, HAZARD_AISLE, FRAGILE_AISLE, LOW_SHELF_LEVEL } from './game/rules.js';
+
+export { LEVELS, getLevelById, validateMove, validateSwap, getRemainingMoves, HAZARD_AISLE, FRAGILE_AISLE, LOW_SHELF_LEVEL };
 
 // Initial mock assignment placeholder: 240 warehouse slots, 40 sample SKUs
 const DEFAULT_SAMPLE_PRODUCTS_COUNT = 40;
@@ -89,6 +52,7 @@ const defaultOriginalAssignment = Object.freeze(
 const defaultBaselineAssignment = Object.freeze(
   Array.from({ length: DEFAULT_SAMPLE_PRODUCTS_COUNT }, (_, i) => i)
 );
+
 
 class StateStore {
   constructor() {
@@ -305,26 +269,73 @@ class StateStore {
   // Assignment & Move Management
   // =========================================================================
 
+  getSlotById(slotId) {
+    if (this.state.layout?.slots && this.state.layout.slots[slotId]) {
+      return this.state.layout.slots[slotId];
+    }
+    const aisle = Math.floor(slotId / 40);
+    const level = slotId % 2;
+    const bay = Math.floor((slotId % 40) / 4);
+    const side = (Math.floor((slotId % 40) / 2) % 2 === 0) ? 'L' : 'R';
+    const zone = aisle === HAZARD_AISLE ? 'hazard' : aisle === FRAGILE_AISLE ? 'fragile' : 'normal';
+    return { id: slotId, aisle, bay, side, level, zone };
+  }
+
+  getProductById(productId) {
+    if (this.state.products && this.state.products[productId]) {
+      return this.state.products[productId];
+    }
+    // Match attributes from mock products:
+    // Product 1, 3, 5 are heavy; Product 6, 9 are fragile; Product 99 is hazard
+    const isHeavy = productId === 1 || productId === 3 || productId === 5 || productId % 4 === 1;
+    const isFragile = productId === 6 || productId === 9 || productId % 7 === 6;
+    const isHazard = productId === 99 || productId % 11 === 10;
+    return {
+      id: productId,
+      code: `SKU-${1000 + productId}`,
+      name: `Product #${productId}`,
+      weight: isHeavy ? 'heavy' : 'light',
+      fragile: isFragile,
+      hazard: isHazard
+    };
+  }
+
   /**
    * Moves product to a target slot or swaps with whatever product is at targetSlotId.
    * Empty warehouse slots are permitted.
+   * Validates placement against active level rules and move budgets.
    */
   moveProduct(productId, targetSlotId, desc = '') {
-    if (this.state.movesUsed >= this.state.movesLimit) {
-      this.setUIStatus('error', `Move limit reached (${this.state.movesLimit} moves). Reset or undo.`);
+    const prevAssignment = [...this.state.assignment];
+    const currentSlotId = prevAssignment[productId];
+    const sourceSlot = this.getSlotById(currentSlotId);
+    const targetSlot = this.getSlotById(targetSlotId);
+    const productA = this.getProductById(productId);
+
+    const occupyingProductIdx = prevAssignment.findIndex(s => s === targetSlotId);
+    const productB = (occupyingProductIdx !== -1 && occupyingProductIdx !== productId)
+      ? this.getProductById(occupyingProductIdx)
+      : null;
+
+    // Validate move against active level rules and move budget
+    const validation = validateSwap(
+      sourceSlot,
+      productA,
+      targetSlot,
+      productB,
+      this.state.level,
+      this.state.movesUsed
+    );
+
+    if (!validation.valid) {
+      this.setUIStatus('error', validation.reason);
       return false;
     }
 
-    const prevAssignment = [...this.state.assignment];
-    const newAssignment = [...this.state.assignment];
-
-    const currentSlot = newAssignment[productId];
-    // Check if another product currently occupies targetSlotId (allowing empty slots)
-    const occupyingProductIdx = newAssignment.findIndex(s => s === targetSlotId);
-
+    const newAssignment = [...prevAssignment];
     if (occupyingProductIdx !== -1 && occupyingProductIdx !== productId) {
       // Swap places
-      newAssignment[occupyingProductIdx] = currentSlot;
+      newAssignment[occupyingProductIdx] = currentSlotId;
       newAssignment[productId] = targetSlotId;
     } else {
       // Direct move into empty slot

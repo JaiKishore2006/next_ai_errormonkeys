@@ -17,6 +17,7 @@ export function renderLevelNav(container) {
         <div class="level-list" role="tablist" aria-label="Warehouse scenario levels">
           ${LEVELS.map(lvl => {
             const isActive = lvl.id === state.currentLevelId;
+            const budgetLabel = lvl.moveLimit !== null ? `${lvl.moveLimit} moves` : 'Unlimited';
             return `
               <button 
                 class="level-card-btn ${isActive ? 'active' : ''}" 
@@ -29,7 +30,7 @@ export function renderLevelNav(container) {
                   <span class="level-title-text">${lvl.name.split(':')[1] || lvl.name}</span>
                 </div>
                 <div class="level-card-meta">
-                  <span class="meta-tag">Budget: ${lvl.moveLimit} moves</span>
+                  <span class="meta-tag">Budget: ${budgetLabel}</span>
                   <span class="meta-tag target-tag">Target: ${lvl.targetSavings}</span>
                 </div>
               </button>
@@ -49,24 +50,30 @@ export function renderLevelNav(container) {
           <p class="rules-description">${currentLevel.description}</p>
           
           <div class="rules-list-wrapper">
-            <h4 class="rules-subheading">Operational Constraints</h4>
+            <h4 class="rules-subheading">Active Level Rules</h4>
             <ul class="rules-list">
-              ${currentLevel.rules.map(r => `<li>${r}</li>`).join('')}
+              ${(currentLevel.ruleDescriptions || []).map(r => `<li>${r}</li>`).join('')}
             </ul>
           </div>
 
           <div class="rules-specs">
             <div class="spec-item">
-              <span class="spec-label">Warehouse Size</span>
-              <span class="spec-value">6 Aisles • 240 Slots</span>
+              <span class="spec-label">Heavy Products</span>
+              <span class="spec-value ${currentLevel.rules.heavyOnLowShelves ? 'text-amber' : 'text-muted'}">
+                ${currentLevel.rules.heavyOnLowShelves ? 'Level 0 Only' : 'Any Shelf'}
+              </span>
             </div>
             <div class="spec-item">
               <span class="spec-label">Hazard Zone</span>
-              <span class="spec-value text-amber">Aisle 5 Only</span>
+              <span class="spec-value ${currentLevel.rules.hazardZone ? 'text-amber' : 'text-muted'}">
+                ${currentLevel.rules.hazardZone ? 'Aisle 5 Enforced' : 'Inactive'}
+              </span>
             </div>
             <div class="spec-item">
               <span class="spec-label">Fragile Zone</span>
-              <span class="spec-value text-blue">Aisle 4 Only</span>
+              <span class="spec-value ${currentLevel.rules.fragileZone ? 'text-blue' : 'text-muted'}">
+                ${currentLevel.rules.fragileZone ? 'Aisle 4 Enforced' : 'Inactive'}
+              </span>
             </div>
           </div>
         </div>
