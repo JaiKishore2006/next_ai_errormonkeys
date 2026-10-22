@@ -21,7 +21,43 @@ import {
   on as onSceneEvent
 } from './scene/scene.js';
 
+// Realistic product catalog matching retail dataset contracts
+const INITIAL_PRODUCTS = [
+  { id: 0, code: '85123A', name: 'WHITE HANGING HEART T-LIGHT HOLDER', freq: 230, weight: 2.5, heavy: false, fragile: false, hazard: false, originalSlot: 1 },
+  { id: 1, code: '71053', name: 'WHITE METAL LANTERN (HEAVY)', freq: 180, weight: 18, heavy: true, fragile: false, hazard: false, originalSlot: 0 },
+  { id: 2, code: '84406B', name: 'CREAM CUPID HEARTS COAT HANGER', freq: 160, weight: 1.2, heavy: false, fragile: false, hazard: false, originalSlot: 3 },
+  { id: 3, code: '84029G', name: 'KNITTED UNION FLAG WATER BOTTLE', freq: 150, weight: 16, heavy: true, fragile: false, hazard: false, originalSlot: 2 },
+  { id: 4, code: '84029E', name: 'RED WOOLLY HOTTIE WHITE HEART', freq: 140, weight: 2.1, heavy: false, fragile: false, hazard: false, originalSlot: 5 },
+  { id: 5, code: '22752', name: 'SET 7 BABUSHKA NESTING BOXES', freq: 125, weight: 20, heavy: true, fragile: false, hazard: false, originalSlot: 4 },
+  { id: 6, code: '21730', name: 'GLASS STAR FROSTED T-LIGHT HOLDER', freq: 110, weight: 0.8, heavy: false, fragile: true, hazard: false, originalSlot: 160 },
+  { id: 7, code: '22633', name: 'HAND WARMER UNION JACK', freq: 95, weight: 0.3, heavy: false, fragile: false, hazard: false, originalSlot: 7 },
+  { id: 8, code: '22632', name: 'HAND WARMER RED RETROSPOT', freq: 85, weight: 0.3, heavy: false, fragile: false, hazard: false, originalSlot: 6 },
+  { id: 9, code: '84997D', name: 'CHILDRENS CUTLERY POLKADOT PINK', freq: 70, weight: 1.4, heavy: false, fragile: true, hazard: false, originalSlot: 162 },
+  { id: 10, code: 'CHEM-01', name: 'INDUSTRIAL FLAMMABLE CLEANER 5L', freq: 45, weight: 5.0, heavy: false, fragile: false, hazard: true, originalSlot: 200 }
+];
+
 function bootstrap() {
+  // Populate products into store state
+  const productsMap = {};
+  INITIAL_PRODUCTS.forEach(p => { productsMap[p.id] = p; });
+  store.setState({ products: productsMap });
+
+  // Initialize initial assignment array: assignment[productId] = slotId
+  const initialAssignment = Array.from({ length: 40 }, (_, i) => {
+    if (INITIAL_PRODUCTS[i]) {
+      return INITIAL_PRODUCTS[i].originalSlot;
+    }
+    return (i * 5) % 240;
+  });
+
+  const baselineAssignment = Array.from({ length: 40 }, (_, i) => i * 2);
+
+  store.initFromData({
+    originalAssignment: initialAssignment,
+    baseline: baselineAssignment,
+    month: '2011-03'
+  });
+
   const headerMount = document.querySelector('#top-header');
   const leftPanelMount = document.querySelector('#left-panel');
   const viewportMount = document.querySelector('#viewport-container');
@@ -42,9 +78,8 @@ function bootstrap() {
     initScene(sceneContainer);
 
     // Initial slot assignment sync
-    const state = store.getState();
     const effectiveAssignment = store.getEffectiveAssignment();
-    setAssignment(effectiveAssignment, Object.values(state.products || {}));
+    setAssignment(effectiveAssignment, INITIAL_PRODUCTS);
 
     // Listen for slot selection from 3D scene -> updates store
     onSceneEvent('slot-click', ({ slotId, slot, product }) => {
@@ -64,10 +99,11 @@ function bootstrap() {
 
     // Synchronize store updates to 3D scene
     store.on('assignment-changed', (assignment) => {
-      setAssignment(assignment, Object.values(store.getState().products || {}));
+      setAssignment(assignment, INITIAL_PRODUCTS);
     });
 
     // Synchronize camera and color mode changes from store
+    const state = store.getState();
     let lastCamera = state.viewport?.cameraPreset;
     let lastColorMode = state.viewport?.colorMode;
 
@@ -76,7 +112,7 @@ function bootstrap() {
 
       if (cameraPreset && cameraPreset !== lastCamera) {
         lastCamera = cameraPreset;
-        const mappedPreset = cameraPreset === 'top-down' ? 'top' : 'angled';
+        const mappedPreset = cameraPreset === 'top' || cameraPreset === 'top-down' ? 'top' : 'angled';
         setCameraPreset(mappedPreset);
       }
 
@@ -84,10 +120,10 @@ function bootstrap() {
         lastColorMode = colorMode;
         const modeMap = {
           velocity: 'heat',
-          zone: 'zones',
-          category: 'default',
           heat: 'heat',
+          zone: 'zones',
           zones: 'zones',
+          category: 'default',
           default: 'default',
           regret: 'regret'
         };

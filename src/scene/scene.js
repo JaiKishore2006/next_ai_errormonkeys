@@ -297,9 +297,29 @@ export function initScene(container, layout = null) {
   renderer.setSize(width, height)
   renderer.shadowMap.enabled = false // Shadows off for performance
 
+  renderer.domElement.style.width = '100%'
+  renderer.domElement.style.height = '100%'
+  renderer.domElement.style.display = 'block'
+  renderer.domElement.style.position = 'absolute'
+  renderer.domElement.style.top = '0'
+  renderer.domElement.style.left = '0'
+
   container.innerHTML = ''
   container.style.position = 'relative'
   container.appendChild(renderer.domElement)
+
+  // Use ResizeObserver for responsive sizing in flex/grid layouts
+  if (typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => {
+      if (!renderer || !camera || !containerRef) return
+      const w = containerRef.clientWidth || 600
+      const h = containerRef.clientHeight || 400
+      camera.aspect = w / h
+      camera.updateProjectionMatrix()
+      renderer.setSize(w, h)
+    })
+    ro.observe(container)
+  }
 
   // OrbitControls
   controls = new OrbitControls(camera, renderer.domElement)
