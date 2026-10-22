@@ -593,7 +593,6 @@ class StateStore {
     };
 
     this.emit('run-finished', newMetrics);
-    this.notifySubscribers();
   }
 
   // =========================================================================
