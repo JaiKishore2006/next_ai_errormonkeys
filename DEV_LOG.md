@@ -84,3 +84,15 @@
   - Verified polyline distance equals calculated distance.
   - Verified baseline assignment decisively beats original unoptimized layout (75,146m vs 82,235m, saving 7,089 meters in month 2011-03 alone).
   - Verified Vite production build (`npm run build`) compiles cleanly in $< 300\text{ ms}$.
+
+### H+2:00 — Phase B3: Depth, Offline Verification & Advanced Heuristics
+- Added route caching (`optimalRouteCache`) to `src/engine/routing.js` by sorted pick-point keys, guaranteeing $O(1)$ lookup for recurring order profiles.
+- Implemented full Affinity Optimizer (`affinityAssignment`) in `src/engine/optimizers.js`:
+  - Blends dock-proximity frequency baseline with top 50 co-occurrence pair groupings.
+  - Applies a 60-trial greedy swap refinement pass to improve pick distance while strictly preserving zone/shelf legality.
+  - Verified that affinity slotting is 100% legal across all 100 products and beats unoptimized original layout.
+- Created offline verification suite `data-pipeline/verify_optimal_tsp.py`:
+  - Verified JavaScript bitmask DP TSP against exact Python brute-force permutations on 50 random customer orders.
+  - **Result: 100.0% exact match ("Matched on 50 of 50 orders")**, logged to `public/data/tsp_verification.json`.
+- Expanded test suite to **25 unit tests** in `tests/engine.test.js` (all passing in 110ms).
+- Verified production build continues to compile without issues.

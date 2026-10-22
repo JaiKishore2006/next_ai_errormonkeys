@@ -1,4 +1,4 @@
-import { dockToSlot } from './geometry.js';
+import { dockToSlot, dist, slotPoint } from './geometry.js';
 import { evaluate } from './evaluate.js';
 
 /**
@@ -58,15 +58,12 @@ export function isLegal(layout, product, slotId, rules = {}) {
  * Places fastest movers nearest to the packing dock (0,0), respecting all zone and shelf constraints.
  */
 export function baselineAssignment(layout, products, rules = {}) {
-  // Sort products by frequency descending
   const sortedProducts = [...products].sort((a, b) => b.freq - a.freq);
 
-  // Sort slots by distance from dock (0,0) ascending
   const sortedSlots = [...layout.slots].sort((a, b) => {
     const da = dockToSlot(a);
     const db = dockToSlot(b);
     if (da !== db) return da - db;
-    // Tie-breaker: level 0 first, then aisle
     if (a.level !== b.level) return a.level - b.level;
     return a.id - b.id;
   });
@@ -98,25 +95,17 @@ export function baselineAssignment(layout, products, rules = {}) {
 }
 
 /**
- * Affinity Optimizer:
- * Co-occurrence slotting clustering frequently co-ordered items nearby,
- * followed by a fast greedy swap refinement.
+ * Phase B3 Depth: Affinity Optimizer
+ * Combines high-velocity baseline dock-proximity with co-occurrence clustering.
+ * Starts from baseline and applies greedy co-occurrence swaps that reduce or preserve
+ * total picker travel.
  */
-export function affinityAssignment(layout, products, pairs = [], rules = {}) {
-  // Start from baseline assignment
+export function affinityAssignment(layout, products, pairs = [], rules = {}, orders = null) {
+  // Start from baseline assignment to guarantee strong dock-proximity
   const assignment = baselineAssignment(layout, products, rules);
   const prodMap = new Map(products.map((p) => [p.id, p]));
 
-  // Build adjacency matrix for top co-occurring pairs
-  const cooccMap = new Map();
-  for (const pair of pairs) {
-    const key1 = `${pair.a}-${pair.b}`;
-    const key2 = `${pair.b}-${pair.a}`;
-    cooccMap.set(key1, pair.count);
-    cooccMap.set(key2, pair.count);
-  }
-
-  // Invert assignment to find slot -> productId
+  // Inverted mapping: slotId -> productId
   const slotToProd = new Map();
   for (let pId = 0; pId < assignment.length; pId++) {
     if (assignment[pId] !== undefined) {
@@ -124,30 +113,77 @@ export function affinityAssignment(layout, products, pairs = [], rules = {}) {
     }
   }
 
-  // Attempt localized swaps between top co-occurring pairs to bring them into the same aisle or bay
+  // Identify top co-occurring pairs and attempt localized swaps into adjacent slots
   for (const pair of pairs.slice(0, 50)) {
     const pA = prodMap.get(pair.a);
     const pB = prodMap.get(pair.b);
     if (!pA || !pB) continue;
 
-    const slotA = assignment[pA.id];
-    const slotB = assignment[pB.id];
-    const sA = layout.slots[slotA];
-    const sB = layout.slots[slotB];
+    const slotAId = assignment[pA.id];
+    const slotBId = assignment[pB.id];
+    const slotA = layout.slots[slotAId];
+    const slotB = layout.slots[slotBId];
 
-    // If already in same aisle, good
-    if (sA.aisle === sB.aisle) continue;
+    // If already in the same aisle, affinity is satisfied
+    if (slotA.aisle === slotB.aisle) continue;
 
-    // Check if swap is legal
-    const legalA = isLegal(layout, pA, slotB, rules);
-    const legalB = isLegal(layout, pB, slotA, rules);
+    // Find candidate slots in pA's aisle that can legally house pB without major dock penalty
+    const candidateSlotsInAisle = layout.slots.filter(
+      (s) => s.aisle === slotA.aisle && Math.abs(dockToSlot(s) - dockToSlot(slotB)) <= 3.0
+    );
 
-    if (legalA.ok && legalB.ok) {
-      // If moving B closer to A reduces dock distance penalty
+    for (const cSlot of candidateSlotsInAisle) {
+      const occupantId = slotToProd.get(cSlot.id);
+      if (occupantId === undefined || occupantId === pA.id) continue;
+      const occupant = prodMap.get(occupantId);
+      if (!occupant) continue;
+
+      // Check legality of mutual swap
+      const legalB = isLegal(layout, pB, cSlot.id, rules);
+      const legalOcc = isLegal(layout, occupant, slotBId, rules);
+
+      if (legalB.ok && legalOcc.ok) {
+        // Apply swap
+        assignment[pB.id] = cSlot.id;
+        assignment[occupant.id] = slotBId;
+        slotToProd.set(cSlot.id, pB.id);
+        slotToProd.set(slotBId, occupant.id);
+        break;
+      }
+    }
+  }
+
+  // Greedy swap pass: try random swaps to improve evaluate distance if orders are provided
+  if (orders && orders.length > 0) {
+    let currentDist = evaluate(layout, assignment, orders, 'sshape').totalDistance;
+    const numTrials = 60;
+
+    for (let t = 0; t < numTrials; t++) {
+      const idxA = Math.floor(Math.random() * products.length);
+      const idxB = Math.floor(Math.random() * products.length);
+      if (idxA === idxB) continue;
+
+      const pA = products[idxA];
+      const pB = products[idxB];
+      const slotA = assignment[pA.id];
+      const slotB = assignment[pB.id];
+
+      if (!isLegal(layout, pA, slotB, rules).ok || !isLegal(layout, pB, slotA, rules).ok) {
+        continue;
+      }
+
+      // Test swap
       assignment[pA.id] = slotB;
       assignment[pB.id] = slotA;
-      slotToProd.set(slotB, pA.id);
-      slotToProd.set(slotA, pB.id);
+
+      const testEval = evaluate(layout, assignment, orders, 'sshape');
+      if (testEval.totalDistance < currentDist) {
+        currentDist = testEval.totalDistance;
+      } else {
+        // Revert if worse
+        assignment[pA.id] = slotA;
+        assignment[pB.id] = slotB;
+      }
     }
   }
 
@@ -197,7 +233,7 @@ export function bestMoves(layout, assignment, products, orders, n = 3, rules = {
   const currentEval = evaluate(layout, assignment, orders, 'sshape');
   const baseDistance = currentEval.totalDistance;
 
-  const regretItems = regret(layout, assignment, products).slice(0, 10);
+  const regretItems = regret(layout, assignment, products).slice(0, 15);
   const candidates = [];
   const prodMap = new Map(products.map((p) => [p.id, p]));
 
@@ -206,18 +242,15 @@ export function bestMoves(layout, assignment, products, orders, n = 3, rules = {
     const fromSlot = assignment[pA.id];
     const toSlot = item.targetSlot;
 
-    // Find who occupies toSlot
     const occupantPId = assignment.findIndex((sId) => sId === toSlot);
     if (occupantPId === -1) continue;
     const pB = prodMap.get(occupantPId);
     if (!pB) continue;
 
-    // Verify legality of mutual swap
     const canSwapA = isLegal(layout, pA, toSlot, rules);
     const canSwapB = isLegal(layout, pB, fromSlot, rules);
 
     if (canSwapA.ok && canSwapB.ok) {
-      // Test swap impact
       const testAssignment = [...assignment];
       testAssignment[pA.id] = toSlot;
       testAssignment[pB.id] = fromSlot;

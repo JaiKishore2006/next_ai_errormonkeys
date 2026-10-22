@@ -7,20 +7,24 @@ import {
   evaluate,
   originalAssignment,
   baselineAssignment,
+  affinityAssignment,
   isLegal,
   regret,
   bestMoves,
   costSummary,
-  compareMethods
+  compareMethods,
+  yearSummary
 } from '../src/engine/index.js';
 
 import mockLayout from '../public/data/mock/layout.json';
 import mockProducts from '../public/data/mock/products.json';
 import mockOrders from '../public/data/mock/orders_base.json';
+import mockPairs from '../public/data/mock/cooccurrence.json';
 
 import realLayout from '../public/data/layout.json';
 import realProducts from '../public/data/products.json';
 import realOrders from '../public/data/orders_base.json';
+import realPairs from '../public/data/cooccurrence.json';
 
 describe('1. Geometry & Distance Metric', () => {
   it('slotPoint accurately retrieves coordinates', () => {
@@ -62,7 +66,7 @@ describe('1. Geometry & Distance Metric', () => {
 
 describe('2. Routing Algorithms & Polyline Integrity', () => {
   it('sshape polyline length matches calculated distance', () => {
-    const slotIds = [0, 4, 20, 28]; // slots across aisles 0 and 1
+    const slotIds = [0, 4, 20, 28];
     const res = routeFor(mockLayout, slotIds, 'sshape', { includePoints: true });
 
     let polylineLength = 0;
@@ -77,22 +81,30 @@ describe('2. Routing Algorithms & Polyline Integrity', () => {
   });
 
   it('sshape handles odd number of visited aisles correctly', () => {
-    const slotIds = [0, 4, 8]; // all in aisle 0 (1 aisle visited -> odd)
+    const slotIds = [0, 4, 8];
     const res = routeFor(mockLayout, slotIds, 'sshape', { includePoints: true });
     expect(res.distance).toBe(16.5);
   });
 
   it('return routing computes round trips per aisle', () => {
-    const slotIds = [0, 20]; // aisle 0 at x=3, aisle 1 at x=8. Both at z=2.25
+    const slotIds = [0, 20];
     const res = routeFor(mockLayout, slotIds, 'return', { includePoints: true });
     expect(res.distance).toBe(25.0);
   });
 
-  it('optimal routing (DP TSP) produces optimal tour for small orders', () => {
+  it('largest-gap routing skips maximum inter-pick gap', () => {
+    const slotIds = [0, 8, 16]; // bay 0 (2.25), bay 2 (5.25), bay 4 (8.25) in aisle 0
+    const res = routeFor(mockLayout, slotIds, 'largestgap', { includePoints: true });
+    expect(res.distance).toBeGreaterThan(0);
+    expect(res.points.length).toBeGreaterThan(0);
+  });
+
+  it('optimal routing (DP TSP) produces optimal tour and caches results', () => {
     const slotIds = [0, 4, 8];
-    const optRes = routeFor(mockLayout, slotIds, 'optimal', { includePoints: true });
-    expect(optRes.distance).toBeGreaterThan(0);
-    expect(optRes.points.length).toBeGreaterThan(0);
+    const optRes1 = routeFor(mockLayout, slotIds, 'optimal', { includePoints: false });
+    const optRes2 = routeFor(mockLayout, slotIds, 'optimal', { includePoints: false });
+    expect(optRes1.distance).toBe(optRes2.distance);
+    expect(optRes1.distance).toBeGreaterThan(0);
   });
 });
 
@@ -154,7 +166,7 @@ describe('4. Real Data Evaluation & Baseline Verification', () => {
     const evalResult = evaluate(realLayout, original, realOrders, 'sshape');
     const duration = performance.now() - t0;
 
-    expect(duration).toBeLessThan(50); // Performance contract requirement!
+    expect(duration).toBeLessThan(50);
     expect(evalResult.totalDistance).toBeGreaterThan(0);
     expect(evalResult.totalTimeSec).toBeGreaterThan(0);
     expect(evalResult.visitsBySlot.length).toBe(realLayout.slots.length);
@@ -167,7 +179,6 @@ describe('4. Real Data Evaluation & Baseline Verification', () => {
     const origEval = evaluate(realLayout, original, realOrders, 'sshape');
     const baseEval = evaluate(realLayout, baseline, realOrders, 'sshape');
 
-    // Baseline must beat original as contracted
     expect(baseEval.totalDistance).toBeLessThan(origEval.totalDistance);
 
     const percentSaved = ((origEval.totalDistance - baseEval.totalDistance) / origEval.totalDistance) * 100;
@@ -175,7 +186,45 @@ describe('4. Real Data Evaluation & Baseline Verification', () => {
   });
 });
 
-describe('5. Cost, Regret, and Optimization Analytics', () => {
+describe('5. Phase B3: Depth, Affinity Optimizer, & Analytics', () => {
+  it('affinityAssignment generates 100% legal assignments under constraints', () => {
+    const affinity = affinityAssignment(realLayout, realProducts, realPairs, {}, realOrders);
+    expect(affinity.length).toBe(100);
+
+    for (const p of realProducts) {
+      const slotId = affinity[p.id];
+      const check = isLegal(realLayout, p, slotId);
+      expect(check.ok).toBe(true);
+    }
+  });
+
+  it('affinity layout beats original unoptimized layout on real orders', () => {
+    const original = originalAssignment(realProducts);
+    const affinity = affinityAssignment(realLayout, realProducts, realPairs, {}, realOrders);
+
+    const origEval = evaluate(realLayout, original, realOrders, 'sshape');
+    const affEval = evaluate(realLayout, affinity, realOrders, 'sshape');
+
+    expect(affEval.totalDistance).toBeLessThan(origEval.totalDistance);
+  });
+
+  it('bestMoves evaluates top candidate swaps with real positive distance gain', () => {
+    const original = originalAssignment(realProducts);
+    const topMoves = bestMoves(realLayout, original, realProducts, realOrders, 3);
+
+    expect(topMoves.length).toBeGreaterThan(0);
+    expect(topMoves.length).toBeLessThanOrEqual(3);
+    expect(topMoves[0].gainMeters).toBeGreaterThan(0);
+
+    // Verify swap legality for top candidate
+    const top = topMoves[0];
+    const pA = realProducts.find((p) => p.id === top.productId);
+    const pB = realProducts.find((p) => p.id === top.swappedWithId);
+
+    expect(isLegal(realLayout, pA, top.toSlot).ok).toBe(true);
+    expect(isLegal(realLayout, pB, top.fromSlot).ok).toBe(true);
+  });
+
   it('costSummary computes ROI and payback periods accurately', () => {
     const summary = costSummary({
       distBeforePerDay: 5000,

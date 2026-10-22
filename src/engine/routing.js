@@ -9,6 +9,9 @@ import { slotPoint, dist, dockToSlot } from './geometry.js';
  * - 'optimal': exact bitmask DP TSP for <= 8 picks, heuristic fallback for > 8
  */
 
+// Cache for optimal TSP routes to avoid recomputing identical pick sets
+const optimalRouteCache = new Map();
+
 export function routeFor(layout, slotIds, method = 'sshape', options = {}) {
   const includePoints = options.includePoints ?? true;
   const aisleLength = layout.aisleLength || 18;
@@ -22,7 +25,7 @@ export function routeFor(layout, slotIds, method = 'sshape', options = {}) {
   }
 
   // Deduplicate and resolve slot coordinates
-  const uniqueSlotIds = Array.from(new Set(slotIds));
+  const uniqueSlotIds = Array.from(new Set(slotIds)).sort((a, b) => a - b);
   const points = uniqueSlotIds.map((id) => slotPoint(layout, id));
 
   switch (method.toLowerCase()) {
@@ -31,7 +34,7 @@ export function routeFor(layout, slotIds, method = 'sshape', options = {}) {
     case 'largestgap':
       return routeLargestGap(layout, points, aisleLength, dock, includePoints);
     case 'optimal':
-      return routeOptimal(layout, points, aisleLength, dock, includePoints);
+      return routeOptimalCached(layout, uniqueSlotIds, points, aisleLength, dock, includePoints);
     case 'sshape':
     default:
       return routeSShape(layout, points, aisleLength, dock, includePoints);
@@ -44,7 +47,6 @@ export function routeFor(layout, slotIds, method = 'sshape', options = {}) {
  * Odd count: last aisle is entered and left from front (2 * maxZ).
  */
 function routeSShape(layout, pickPoints, aisleLength, dock, includePoints) {
-  // Group picks by aisle
   const aisleMap = new Map();
   for (const pt of pickPoints) {
     if (!aisleMap.has(pt.aisle)) {
@@ -53,7 +55,6 @@ function routeSShape(layout, pickPoints, aisleLength, dock, includePoints) {
     aisleMap.get(pt.aisle).zList.push(pt.z);
   }
 
-  // Sort visited aisles by x
   const sortedAisles = Array.from(aisleMap.values()).sort((a, b) => a.x - b.x);
   const numAisles = sortedAisles.length;
 
@@ -77,7 +78,6 @@ function routeSShape(layout, pickPoints, aisleLength, dock, includePoints) {
     const maxZ = zSortedAsc[zSortedAsc.length - 1];
 
     if (includePoints) {
-      // Move along cross-aisle to this aisle
       waypoints.push({ x: aisleInfo.x, z: currentZ });
     }
 
@@ -85,11 +85,9 @@ function routeSShape(layout, pickPoints, aisleLength, dock, includePoints) {
       // Last aisle in an odd-count order: enter and leave from front
       verticalDist += 2 * maxZ;
       if (includePoints) {
-        // Walk up to picks
         for (const z of zSortedAsc) {
           waypoints.push({ x: aisleInfo.x, z });
         }
-        // Walk back down to front
         waypoints.push({ x: aisleInfo.x, z: 0 });
         currentZ = 0;
       }
@@ -98,14 +96,12 @@ function routeSShape(layout, pickPoints, aisleLength, dock, includePoints) {
       verticalDist += aisleLength;
       if (includePoints) {
         if (currentZ === 0) {
-          // Walking from front to back
           for (const z of zSortedAsc) {
             waypoints.push({ x: aisleInfo.x, z });
           }
           waypoints.push({ x: aisleInfo.x, z: aisleLength });
           currentZ = aisleLength;
         } else {
-          // Walking from back to front
           const zSortedDesc = [...zSortedAsc].reverse();
           for (const z of zSortedDesc) {
             waypoints.push({ x: aisleInfo.x, z });
@@ -122,7 +118,6 @@ function routeSShape(layout, pickPoints, aisleLength, dock, includePoints) {
   // Return to dock
   if (includePoints) {
     if (currentZ !== 0) {
-      // If ended at back, return along back cross-aisle then down dock axis or vice versa
       waypoints.push({ x: dock.x, z: aisleLength });
       waypoints.push({ x: dock.x, z: dock.z });
     } else {
@@ -185,6 +180,7 @@ function routeReturn(layout, pickPoints, aisleLength, dock, includePoints) {
 /**
  * Largest-gap Routing
  * Skips the largest gap between consecutive picks in an aisle.
+ * If largest gap is at the back, it equals return.
  */
 function routeLargestGap(layout, pickPoints, aisleLength, dock, includePoints) {
   const aisleMap = new Map();
@@ -222,16 +218,23 @@ function routeLargestGap(layout, pickPoints, aisleLength, dock, includePoints) {
       }
     }
 
-    // Aisle cost: 2 * (aisleLength - largestGap)
-    const aisleCost = 2 * (aisleLength - largestGap);
-    verticalDist += aisleCost;
-
-    if (includePoints) {
-      waypoints.push({ x: aisleInfo.x, z: 0 });
-      for (const z of sortedZ) {
-        waypoints.push({ x: aisleInfo.x, z });
+    // If largest gap is at the back, picker enters and returns from front
+    if (gapIndex === allPoints.length - 2) {
+      const maxZ = sortedZ[sortedZ.length - 1];
+      verticalDist += 2 * maxZ;
+      if (includePoints) {
+        waypoints.push({ x: aisleInfo.x, z: 0 });
+        for (const z of sortedZ) waypoints.push({ x: aisleInfo.x, z });
+        waypoints.push({ x: aisleInfo.x, z: 0 });
       }
-      waypoints.push({ x: aisleInfo.x, z: 0 });
+    } else {
+      // Skips largest gap: travels 2 * (L - largestGap)
+      verticalDist += 2 * (aisleLength - largestGap);
+      if (includePoints) {
+        waypoints.push({ x: aisleInfo.x, z: 0 });
+        for (const z of sortedZ) waypoints.push({ x: aisleInfo.x, z });
+        waypoints.push({ x: aisleInfo.x, z: 0 });
+      }
     }
   }
 
@@ -241,6 +244,23 @@ function routeLargestGap(layout, pickPoints, aisleLength, dock, includePoints) {
 
   const totalDistance = Math.round((horizontalDist + verticalDist) * 100) / 100;
   return { distance: totalDistance, points: waypoints };
+}
+
+/**
+ * Cached Wrapper for Optimal Bitmask DP TSP
+ */
+function routeOptimalCached(layout, uniqueSlotIds, pickPoints, aisleLength, dock, includePoints) {
+  const cacheKey = uniqueSlotIds.join(',');
+  if (!includePoints && optimalRouteCache.has(cacheKey)) {
+    return optimalRouteCache.get(cacheKey);
+  }
+
+  const res = routeOptimal(layout, pickPoints, aisleLength, dock, includePoints);
+
+  if (!includePoints) {
+    optimalRouteCache.set(cacheKey, res);
+  }
+  return res;
 }
 
 /**
