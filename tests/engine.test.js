@@ -13,6 +13,7 @@ import {
   bestMoves,
   costSummary,
   compareMethods,
+  seasonRun,
   yearSummary
 } from '../src/engine/index.js';
 
@@ -25,6 +26,35 @@ import realLayout from '../public/data/layout.json';
 import realProducts from '../public/data/products.json';
 import realOrders from '../public/data/orders_base.json';
 import realPairs from '../public/data/cooccurrence.json';
+
+// Import all 12 monthly order datasets
+import orders2010_12 from '../public/data/orders_2010-12.json';
+import orders2011_01 from '../public/data/orders_2011-01.json';
+import orders2011_02 from '../public/data/orders_2011-02.json';
+import orders2011_03 from '../public/data/orders_2011-03.json';
+import orders2011_04 from '../public/data/orders_2011-04.json';
+import orders2011_05 from '../public/data/orders_2011-05.json';
+import orders2011_06 from '../public/data/orders_2011-06.json';
+import orders2011_07 from '../public/data/orders_2011-07.json';
+import orders2011_08 from '../public/data/orders_2011-08.json';
+import orders2011_09 from '../public/data/orders_2011-09.json';
+import orders2011_10 from '../public/data/orders_2011-10.json';
+import orders2011_11 from '../public/data/orders_2011-11.json';
+
+const active12Months = {
+  '2010-12': orders2010_12,
+  '2011-01': orders2011_01,
+  '2011-02': orders2011_02,
+  '2011-03': orders2011_03,
+  '2011-04': orders2011_04,
+  '2011-05': orders2011_05,
+  '2011-06': orders2011_06,
+  '2011-07': orders2011_07,
+  '2011-08': orders2011_08,
+  '2011-09': orders2011_09,
+  '2011-10': orders2011_10,
+  '2011-11': orders2011_11
+};
 
 describe('1. Geometry & Distance Metric', () => {
   it('slotPoint accurately retrieves coordinates', () => {
@@ -93,7 +123,7 @@ describe('2. Routing Algorithms & Polyline Integrity', () => {
   });
 
   it('largest-gap routing skips maximum inter-pick gap', () => {
-    const slotIds = [0, 8, 16]; // bay 0 (2.25), bay 2 (5.25), bay 4 (8.25) in aisle 0
+    const slotIds = [0, 8, 16];
     const res = routeFor(mockLayout, slotIds, 'largestgap', { includePoints: true });
     expect(res.distance).toBeGreaterThan(0);
     expect(res.points.length).toBeGreaterThan(0);
@@ -216,7 +246,6 @@ describe('5. Phase B3: Depth, Affinity Optimizer, & Analytics', () => {
     expect(topMoves.length).toBeLessThanOrEqual(3);
     expect(topMoves[0].gainMeters).toBeGreaterThan(0);
 
-    // Verify swap legality for top candidate
     const top = topMoves[0];
     const pA = realProducts.find((p) => p.id === top.productId);
     const pB = realProducts.find((p) => p.id === top.swappedWithId);
@@ -260,5 +289,59 @@ describe('5. Phase B3: Depth, Affinity Optimizer, & Analytics', () => {
     expect(comparison.return).toBeGreaterThan(0);
     expect(comparison.largestgap).toBeGreaterThan(0);
     expect(comparison.optimal).toBeGreaterThan(0);
+  });
+});
+
+describe('6. Phase B4: Full 12-Month Season Simulation & Robustness', () => {
+  it('evaluates all 12 months with no NaN values and non-zero meters', () => {
+    const original = originalAssignment(realProducts);
+
+    for (const [monthKey, orders] of Object.entries(active12Months)) {
+      const t0 = performance.now();
+      const res = seasonRun(realLayout, original, orders, 'sshape', `test_${monthKey}`);
+      const duration = performance.now() - t0;
+
+      expect(duration).toBeLessThan(50);
+      expect(Number.isFinite(res.totalDistance)).toBe(true);
+      expect(res.totalDistance).toBeGreaterThan(0);
+      expect(Number.isFinite(res.totalTimeSec)).toBe(true);
+      expect(res.totalTimeSec).toBeGreaterThan(0);
+    }
+  });
+
+  it('yearSummary computes 12-month comparisons for all 3 policies with verdict', () => {
+    const original = originalAssignment(realProducts);
+    const baseline = baselineAssignment(realLayout, realProducts);
+
+    const yearResult = yearSummary(
+      realLayout,
+      baseline,
+      original,
+      active12Months,
+      realProducts,
+      { wage: 150, costPerMove: 250, playerMoves: 10 }
+    );
+
+    expect(yearResult.months.length).toBe(12);
+    expect(yearResult.policyOriginal.totalMeters).toBeGreaterThan(0);
+    expect(yearResult.policyPlayer.totalMeters).toBeLessThan(yearResult.policyOriginal.totalMeters);
+    expect(yearResult.policyPlayer.netSavings).toBeGreaterThan(0);
+    expect(typeof yearResult.verdict).toBe('string');
+    expect(yearResult.verdict.length).toBeGreaterThan(0);
+  });
+
+  it('checks all 12 months across all 4 routing methods with zero crashes', () => {
+    const original = originalAssignment(mockProducts);
+
+    for (const orders of Object.values(active12Months)) {
+      // Test sample orders with all methods
+      const sample = orders.slice(0, 15);
+      const comparison = compareMethods(mockLayout, original, sample);
+
+      expect(Number.isFinite(comparison.sshape)).toBe(true);
+      expect(Number.isFinite(comparison.return)).toBe(true);
+      expect(Number.isFinite(comparison.largestgap)).toBe(true);
+      expect(Number.isFinite(comparison.optimal)).toBe(true);
+    }
   });
 });

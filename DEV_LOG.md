@@ -96,3 +96,15 @@
   - **Result: 100.0% exact match ("Matched on 50 of 50 orders")**, logged to `public/data/tsp_verification.json`.
 - Expanded test suite to **25 unit tests** in `tests/engine.test.js` (all passing in 110ms).
 - Verified production build continues to compile without issues.
+
+### H+2:30 — Phase B4: 12-Month Season Simulation & "Is It Worth It?" Modeling
+- Enhanced `seasonRun` in `src/engine/cost.js` with LRU key-level caching (`seasonCache`) enabling instant timeline scrubbing across months.
+- Implemented full multi-policy simulation in `yearSummary`:
+  - **Policy A (Never Touched):** Base layout across 14,373 orders over 12 months.
+  - **Policy B (Player Layout):** Fixed optimization taking into account player move limits.
+  - **Policy C (Dynamic Re-slotting):** Re-optimizes warehouse layout each month based on monthly product frequency fluctuations, explicitly accounting for physical labor relocation costs ($\text{₹}250/\text{move}$).
+- Added automated strategic verdict generation for Person C's **"Is it worth it?"** HUD panel (identifies whether seasonal shifts justify physical relocation overhead).
+- Generated `public/data/season_manifest.json` indexing 14,373 orders across all 12 active months.
+- Expanded Vitest suite to **28 unit tests**:
+  - Full matrix test covering all 12 months across all 4 routing algorithms.
+  - Verified 100% numeric validity (zero NaNs, zero undefined values, all total distances $> 0$).

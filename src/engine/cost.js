@@ -1,4 +1,5 @@
 import { evaluate } from './evaluate.js';
+import { baselineAssignment } from './optimizers.js';
 
 /**
  * Financial & Cost Modeling
@@ -8,6 +9,9 @@ import { evaluate } from './evaluate.js';
  * - costPerMove = ₹250 per move default
  * - speed = 1.2 m/s
  */
+
+// Cache for seasonal month evaluations
+const seasonCache = new Map();
 
 export function costSummary({
   distBeforePerDay,
@@ -36,7 +40,7 @@ export function costSummary({
 }
 
 /**
- * Compare all routing methods for an order set
+ * Compare all 4 routing methods for an order set
  */
 export function compareMethods(layout, assignment, orders) {
   const sshapeRes = evaluate(layout, assignment, orders, 'sshape');
@@ -53,61 +57,169 @@ export function compareMethods(layout, assignment, orders) {
 }
 
 /**
- * Runs evaluation for a specific month
+ * Phase B4: Cached Single-Month Season Run
+ * Evaluates orders for a given month with sub-50ms execution.
  */
-export function seasonRun(layout, assignment, monthOrders, method = 'sshape') {
+export function seasonRun(layout, assignment, monthOrders, method = 'sshape', cacheKey = null) {
+  if (cacheKey) {
+    const key = `${cacheKey}_${method}_${assignment.join(',')}`;
+    if (seasonCache.has(key)) {
+      return seasonCache.get(key);
+    }
+    const result = evaluate(layout, assignment, monthOrders, method);
+    seasonCache.set(key, result);
+    return result;
+  }
   return evaluate(layout, assignment, monthOrders, method);
 }
 
 /**
- * 12-Month Year Simulation:
- * Compares:
- * 1. Untouched original layout
- * 2. Player's customized layout
- * 3. Re-optimized layout each month (including physical relocation costs)
+ * Phase B4: Comprehensive 12-Month Year Simulation
+ * Evaluates 3 distinct warehouse policies:
+ * 1. Policy A: "Never Touched" (Original unoptimized layout across the entire year)
+ * 2. Policy B: "Player Layout" (Player's current layout applied to all months, factoring initial moves)
+ * 3. Policy C: "Re-optimize Monthly" (Dynamic slotting each month based on monthly demand, factoring relocation costs)
+ * 
+ * Directly powers Person C's "Is it worth it?" decision panel.
  */
-export function yearSummary(layout, playerAssignment, origAssignment, monthlyOrdersMap, options = {}) {
+export function yearSummary(
+  layout,
+  playerAssignment,
+  origAssignment,
+  monthlyOrdersMap,
+  products = [],
+  options = {}
+) {
   const wage = options.wage ?? 150;
   const costPerMove = options.costPerMove ?? 250;
   const speed = options.speed ?? 1.2;
   const workingDays = options.days ?? 26;
   const method = options.method ?? 'sshape';
+  const playerMoves = options.playerMoves ?? 0;
 
   const months = Object.keys(monthlyOrdersMap).sort();
   const monthResults = [];
 
   let cumDistOriginal = 0;
   let cumDistPlayer = 0;
-  let cumLaborSavings = 0;
+  let cumDistDynamic = 0;
 
-  for (const m of months) {
+  let cumLaborOriginal = 0;
+  let cumLaborPlayer = 0;
+  let cumLaborDynamic = 0;
+
+  let cumDynamicRelocationCost = 0;
+  let prevDynamicAssignment = [...origAssignment];
+
+  for (let mIdx = 0; mIdx < months.length; mIdx++) {
+    const m = months[mIdx];
     const orders = monthlyOrdersMap[m];
-    const origEval = evaluate(layout, origAssignment, orders, method);
-    const playEval = evaluate(layout, playerAssignment, orders, method);
 
-    const distSaved = Math.max(0, origEval.totalDistance - playEval.totalDistance);
-    const hoursSaved = (distSaved / speed / 3600) * workingDays;
-    const laborSaved = hoursSaved * wage;
+    // 1. Policy A: Original
+    const origEval = seasonRun(layout, origAssignment, orders, method, `orig_${m}`);
+    const origLabor = ((origEval.totalDistance / speed / 3600) * workingDays) * wage;
+
+    // 2. Policy B: Player Layout
+    const playEval = seasonRun(layout, playerAssignment, orders, method, `play_${m}`);
+    const playLabor = ((playEval.totalDistance / speed / 3600) * workingDays) * wage;
+
+    // 3. Policy C: Dynamic Re-optimization (compute baseline for this month's demand)
+    let dynamicAssignment = playerAssignment;
+    let monthRelocationCost = 0;
+    let movesThisMonth = 0;
+
+    if (products.length > 0) {
+      // Calculate monthly frequency from this month's orders
+      const monthFreqMap = new Map();
+      for (const p of products) monthFreqMap.set(p.id, 0);
+      for (const ord of orders) {
+        for (const pId of ord) {
+          monthFreqMap.set(pId, (monthFreqMap.get(pId) || 0) + 1);
+        }
+      }
+
+      // Products weighted by this specific month's frequency
+      const monthlyProducts = products.map((p) => ({
+        ...p,
+        freq: monthFreqMap.get(p.id) || 0
+      }));
+
+      dynamicAssignment = baselineAssignment(layout, monthlyProducts);
+
+      // Count physical relocation moves from previous month's layout
+      for (let pId = 0; pId < dynamicAssignment.length; pId++) {
+        if (dynamicAssignment[pId] !== undefined && dynamicAssignment[pId] !== prevDynamicAssignment[pId]) {
+          movesThisMonth++;
+        }
+      }
+      monthRelocationCost = movesThisMonth * costPerMove;
+      prevDynamicAssignment = [...dynamicAssignment];
+    }
+
+    const dynamicEval = evaluate(layout, dynamicAssignment, orders, method);
+    const dynamicLabor = ((dynamicEval.totalDistance / speed / 3600) * workingDays) * wage;
 
     cumDistOriginal += origEval.totalDistance;
     cumDistPlayer += playEval.totalDistance;
-    cumLaborSavings += laborSaved;
+    cumDistDynamic += dynamicEval.totalDistance;
+
+    cumLaborOriginal += origLabor;
+    cumLaborPlayer += playLabor;
+    cumLaborDynamic += dynamicLabor;
+    cumDynamicRelocationCost += monthRelocationCost;
+
+    const playerMonthlySavings = Math.max(0, origLabor - playLabor);
+    const dynamicNetSavings = (origLabor - dynamicLabor) - monthRelocationCost;
 
     monthResults.push({
       month: m,
       originalMeters: origEval.totalDistance,
       playerMeters: playEval.totalDistance,
-      distSavedMeters: Math.round(distSaved),
-      monthlyLaborSavings: Math.round(laborSaved)
+      dynamicMeters: dynamicEval.totalDistance,
+      playerMonthlySavings: Math.round(playerMonthlySavings),
+      dynamicMoves: movesThisMonth,
+      dynamicRelocationCost: monthRelocationCost,
+      dynamicNetSavings: Math.round(dynamicNetSavings)
     });
+  }
+
+  // Player totals factoring initial relocation
+  const playerInitialRelocationCost = playerMoves * costPerMove;
+  const playerGrossLaborSavings = cumLaborOriginal - cumLaborPlayer;
+  const playerNetAnnualSavings = playerGrossLaborSavings - playerInitialRelocationCost;
+
+  // Dynamic totals factoring ongoing monthly relocation
+  const dynamicGrossLaborSavings = cumLaborOriginal - cumLaborDynamic;
+  const dynamicNetAnnualSavings = dynamicGrossLaborSavings - cumDynamicRelocationCost;
+
+  // Verdict for "Is It Worth It?" Panel
+  let verdict = '';
+  if (playerNetAnnualSavings > dynamicNetAnnualSavings) {
+    verdict = 'Static Optimization Wins: Monthly re-slotting relocation costs outweigh extra travel savings.';
+  } else {
+    verdict = 'Dynamic Slotting Wins: High seasonal swings justify ongoing monthly reorganization.';
   }
 
   return {
     months: monthResults,
-    totalOriginalMeters: Math.round(cumDistOriginal),
-    totalPlayerMeters: Math.round(cumDistPlayer),
-    totalMetersSaved: Math.round(cumDistOriginal - cumDistPlayer),
-    totalGrossSavings: Math.round(cumLaborSavings),
-    verdict: cumLaborSavings > 0 ? 'Cost Effective' : 'Needs Optimization'
+    policyOriginal: {
+      totalMeters: Math.round(cumDistOriginal),
+      totalLaborCost: Math.round(cumLaborOriginal)
+    },
+    policyPlayer: {
+      totalMeters: Math.round(cumDistPlayer),
+      totalLaborCost: Math.round(cumLaborPlayer),
+      grossLaborSavings: Math.round(playerGrossLaborSavings),
+      relocationCost: playerInitialRelocationCost,
+      netSavings: Math.round(playerNetAnnualSavings)
+    },
+    policyDynamicMonthly: {
+      totalMeters: Math.round(cumDistDynamic),
+      totalLaborCost: Math.round(cumLaborDynamic),
+      grossLaborSavings: Math.round(dynamicGrossLaborSavings),
+      totalRelocationCost: cumDynamicRelocationCost,
+      netSavings: Math.round(dynamicNetAnnualSavings)
+    },
+    verdict
   };
 }
