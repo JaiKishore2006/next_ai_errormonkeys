@@ -1,0 +1,12 @@
+[
+  { "id": 0, "code": "85123A", "name": "WHITE HANGING HEART T-LIGHT HOLDER", "freq": 230, "weight": "medium", "fragile": false, "hazard": false, "originalSlot": 1 },
+  { "id": 1, "code": "71053", "name": "WHITE METAL LANTERN", "freq": 180, "weight": "heavy", "fragile": false, "hazard": false, "originalSlot": 0 },
+  { "id": 2, "code": "84406B", "name": "CREAM CUPID HEARTS COAT HANGER", "freq": 160, "weight": "light", "fragile": false, "hazard": false, "originalSlot": 3 },
+  { "id": 3, "code": "84029G", "name": "KNITTED UNION FLAG HOT WATER BOTTLE", "freq": 150, "weight": "heavy", "fragile": false, "hazard": false, "originalSlot": 2 },
+  { "id": 4, "code": "84029E", "name": "RED WOOLLY HOTTIE WHITE HEART.", "freq": 140, "weight": "medium", "fragile": false, "hazard": false, "originalSlot": 5 },
+  { "id": 5, "code": "22752", "name": "SET 7 BABUSHKA NESTING BOXES", "freq": 125, "weight": "heavy", "fragile": false, "hazard": false, "originalSlot": 4 },
+  { "id": 6, "code": "21730", "name": "GLASS STAR FROSTED T-LIGHT HOLDER", "freq": 110, "weight": "light", "fragile": true, "hazard": false, "originalSlot": 21 },
+  { "id": 7, "code": "22633", "name": "HAND WARMER UNION JACK", "freq": 95, "weight": "light", "fragile": false, "hazard": false, "originalSlot": 7 },
+  { "id": 8, "code": "22632", "name": "HAND WARMER RED RETROSPOT", "freq": 85, "weight": "light", "fragile": false, "hazard": false, "originalSlot": 6 },
+  { "id": 9, "code": "84997D", "name": "CHILDRENS CUTLERY POLKADOT PINK", "freq": 70, "weight": "medium", "fragile": true, "hazard": false, "originalSlot": 20 }
+]
