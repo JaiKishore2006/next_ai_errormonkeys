@@ -20,5 +20,14 @@
 
 ## Development Entries
 
-Add dated entries for implementation decisions, tests,
-integration issues, AI assistance and rejected approaches.
+### H+0:15 — Person B Initiation: Mocks, Test Framework, and Scaffolding
+- Checked out working branch `feature/engine-pipeline`.
+- Created handcrafted mock data files in `public/data/mock/`:
+  - `layout.json`: 2-aisle layout with 40 slots, coordinates derived from official geometry formulas.
+  - `products.json`: 10 realistic products with weight/fragility/hazard tags and valid baseline slots.
+  - `orders_base.json` & `orders_2011-03.json`: 5 realistic multi-item customer orders.
+  - `cooccurrence.json`: frequent product pairs.
+  - `monthly_demand.json`: 12-month synthetic demand frequencies for all 10 products.
+- Installed `vitest` as devDependency and configured `"test": "vitest run"` in `package.json`.
+- Established project directory structure for Person B: `data-pipeline/`, `src/engine/`, `tests/`.
+- Verified test runner passes successfully (`tests/engine.test.js`).
