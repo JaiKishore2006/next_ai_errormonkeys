@@ -76,3 +76,24 @@
 - **Verification:**
   - `node src/game/rules.test.js`: All 20+ assertions passed.
   - `npm run build`: Succeeded in 142ms.
+
+### 2026-10-22 — Slot Swap Interaction & Undo Stack Implementation (Prompt 6)
+- **Author:** Person C
+- **Completed:**
+  - Created `src/game/swap.js` implementing complete slot swap interaction logic:
+    - Resolves products assigned to slots using `assignment[productId] = slotId`.
+    - Handles two occupied slots (mutual product swap).
+    - Handles one occupied slot and one empty slot (product transfer into empty slot).
+    - Rejects two empty slots and self-swaps (`slotA === slotB`), leaving state 100% unchanged.
+    - Validates destination legality for every moved product under active level rules (Level 1–5).
+    - Respects optional Person B engine legality check via `verifyWithEngine()`.
+    - Updates assignment, increments `movesUsed`, pushes prior assignment snapshot to undo stack, and emits `'assignment-changed'` event only upon successful validation.
+    - Implemented `undoSwap()` restoring previous layout, decrementing move counter, and notifying listeners.
+    - Implemented `resetToOriginal()` returning to `originalAssignment` while preserving strict `Object.freeze` immutability.
+    - Provided `MockSceneAdapter` and `attachSceneSwapListener()` to emulate and handle Person A 3D scene `'swap-request'` events.
+  - Wired slot swap interactions into `src/state.js` (`store.swapSlots`, `store.undoMove`, `store.resetLayout`).
+  - Connected 2D warehouse schematic slot clicks in `src/ui/viewport.js` so users can click two slots to execute swaps interactively.
+  - Added unit test suites in `src/game/swap.test.js` covering all 10 edge cases and integrated with Vitest.
+- **Verification:**
+  - `npm test`: All 17 tests passed across `tests/engine.test.js`, `src/game/rules.test.js`, and `src/game/swap.test.js`.
+  - `npm run build`: Succeeded in 213ms without bundle errors.

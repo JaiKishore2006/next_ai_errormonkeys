@@ -41,8 +41,10 @@
 
 import { LEVELS, getLevelById } from './game/levels.js';
 import { validateMove, validateSwap, getRemainingMoves, HAZARD_AISLE, FRAGILE_AISLE, LOW_SHELF_LEVEL } from './game/rules.js';
+import { executeSwap, undoSwap, resetToOriginal } from './game/swap.js';
 
-export { LEVELS, getLevelById, validateMove, validateSwap, getRemainingMoves, HAZARD_AISLE, FRAGILE_AISLE, LOW_SHELF_LEVEL };
+export { LEVELS, getLevelById, validateMove, validateSwap, getRemainingMoves, HAZARD_AISLE, FRAGILE_AISLE, LOW_SHELF_LEVEL, executeSwap, undoSwap, resetToOriginal };
+
 
 // Initial mock assignment placeholder: 240 warehouse slots, 40 sample SKUs
 const DEFAULT_SAMPLE_PRODUCTS_COUNT = 40;
@@ -381,44 +383,17 @@ class StateStore {
   }
 
   /**
+   * Executes a swap between two slot IDs using the swap module.
+   */
+  swapSlots(slotA, slotB) {
+    return executeSwap(slotA, slotB, this);
+  }
+
+  /**
    * Reverts the most recent assignment change.
    */
   undoMove() {
-    if (this.state.movesUsed <= 0 || this.state.moveHistory.length === 0) {
-      this.setUIStatus('ready', 'No moves to undo.');
-      return false;
-    }
-
-    const history = [...this.state.moveHistory];
-    const lastStep = history.pop();
-    const restoredAssignment = lastStep.previousAssignment;
-    const newMovesUsed = this.state.movesUsed - 1;
-
-    // Adjust mock distance metric
-    const currentDist = this.state.metrics.playerDistance || 1264.0;
-    const origDist = this.state.metrics.originalDistance || 1420.5;
-    const revertedDist = Math.min(origDist, Math.round((currentDist + 15.0) * 10) / 10);
-    const savings = Math.max(0, Math.round(((origDist - revertedDist) / origDist) * 1000) / 10);
-
-    this.state = {
-      ...this.state,
-      assignment: restoredAssignment,
-      movesUsed: newMovesUsed,
-      moveHistory: history,
-      metrics: {
-        ...this.state.metrics,
-        playerDistance: revertedDist,
-        savingsPct: savings
-      },
-      uiStatus: {
-        ...this.state.uiStatus,
-        status: 'ready',
-        message: `Undid: ${lastStep.moveDesc}`
-      }
-    };
-
-    this.emit('assignment-changed', restoredAssignment, { isPreview: false, source: 'undo' });
-    return true;
+    return undoSwap(this).success;
   }
 
   /**
@@ -426,27 +401,9 @@ class StateStore {
    * Clones from the frozen originalAssignment.
    */
   resetLayout() {
-    this.state = {
-      ...this.state,
-      assignment: [...this.state.originalAssignment],
-      movesUsed: 0,
-      moveHistory: [],
-      isPreviewingBaseline: false,
-      metrics: {
-        ...this.state.metrics,
-        playerDistance: this.state.metrics.originalDistance,
-        savingsPct: 0.0,
-        lastCalculatedAt: new Date().toISOString()
-      },
-      uiStatus: {
-        ...this.state.uiStatus,
-        status: 'ready',
-        message: 'Layout reset to initial arrangement.'
-      }
-    };
-
-    this.emit('assignment-changed', this.state.assignment, { isPreview: false, source: 'reset' });
+    return resetToOriginal(this).success;
   }
+
 
   // =========================================================================
   // Baseline Preview vs. Player Assignment

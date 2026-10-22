@@ -155,13 +155,22 @@ export function renderViewport(container) {
       });
     }
 
-    // Slot click handler
+    // Slot click handler: click one to select, click second to swap!
     container.querySelectorAll('.mock-slot-cell').forEach(cell => {
       cell.addEventListener('click', () => {
-        const slotId = parseInt(cell.getAttribute('data-slot-id'), 10);
+        const targetSlotId = parseInt(cell.getAttribute('data-slot-id'), 10);
         const aisle = parseInt(cell.getAttribute('data-aisle'), 10);
         const bay = parseInt(cell.getAttribute('data-bay'), 10);
-        store.selectSlot({ slotId, aisle, bay, level: 0, product: `SKU-${1000 + slotId}` });
+        const slotLevel = targetSlotId % 2;
+
+        if (selectedSlot && selectedSlot.slotId !== targetSlotId) {
+          // Second click on different slot -> Execute Swap!
+          store.swapSlots(selectedSlot.slotId, targetSlotId);
+          store.selectSlot({ slotId: targetSlotId, aisle, bay, level: slotLevel, product: `SKU-${1000 + targetSlotId}` });
+        } else {
+          // Select this slot
+          store.selectSlot({ slotId: targetSlotId, aisle, bay, level: slotLevel, product: `SKU-${1000 + targetSlotId}` });
+        }
       });
     });
 
@@ -170,7 +179,9 @@ export function renderViewport(container) {
     if (swapBtn) {
       swapBtn.addEventListener('click', () => {
         if (selectedSlot) {
-          store.recordMove(`Moved SKU-${1000 + selectedSlot.slotId} to Bay ${selectedSlot.bay === 0 ? 1 : 0}`);
+          // Swap with adjacent slot in same bay (or next slot)
+          const targetSlotId = selectedSlot.slotId % 2 === 0 ? selectedSlot.slotId + 2 : selectedSlot.slotId - 2;
+          store.swapSlots(selectedSlot.slotId, Math.max(0, Math.min(239, targetSlotId)));
         }
       });
     }
