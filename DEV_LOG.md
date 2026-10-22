@@ -108,3 +108,17 @@
 - Expanded Vitest suite to **28 unit tests**:
   - Full matrix test covering all 12 months across all 4 routing algorithms.
   - Verified 100% numeric validity (zero NaNs, zero undefined values, all total distances $> 0$).
+
+### H+3:00 — Phase B5: Final Deliverables, Deck Numbers & Ship Freeze
+- Verified code freeze: all 28 Vitest tests pass in 180ms; production build finishes in 250ms.
+- Executed `data-pipeline/compute_deck_numbers.js` and verified final official metrics:
+  - Base month (2011-03, 1,119 orders): Original 82,235m vs. Baseline 75,146m (7,089m / 8.6% saved) vs. Affinity 73,774.5m (8,460.5m / 10.3% saved).
+  - Annual totals (14,373 orders): 1,007.6 km down to 947.0 km (60.7 km walking eliminated, ₹54,775 gross savings, ₹43,525 net annual benefit).
+  - Outputted machine-readable report to `public/data/deck_numbers.json`.
+- Generated comprehensive README section and pitch deck handover guide in `docs/PERSON_B_DELIVERABLES.md`:
+  - Full transaction cleaning log with exact row reduction counts.
+  - Synthetic keyword disclosures and physical warehouse geometry specifications.
+  - Mathematical definitions for S-shape, Return, Largest-Gap, and Optimal bitmask DP TSP.
+  - Assumptions table (walking speed 1.2 m/s, pick time 12s, wage ₹150/h, relocation cost ₹250/move).
+  - Attribution text (UCI Online Retail II, Chen 2012, CC BY 4.0) and honest technical limitations.
+- Person B's full scope is complete, verified, and ready for final team submission.

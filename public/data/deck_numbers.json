@@ -1,0 +1,31 @@
+{
+  "baseMonth": {
+    "month": "2011-03",
+    "ordersCount": 1119,
+    "originalMeters": 82235,
+    "baselineMeters": 75146,
+    "affinityMeters": 73774.5,
+    "baselineMetersSaved": 7089,
+    "baselinePctSaved": "8.6%",
+    "affinityMetersSaved": 8461,
+    "affinityPctSaved": "10.3%",
+    "monthlyHoursSaved": 1.6,
+    "monthlyGrossSavingsRupees": 246,
+    "relocationCostRupees": 11250,
+    "firstMonthNetRupees": -11004,
+    "paybackPeriodDays": 1188.3
+  },
+  "annualTotals": {
+    "totalOrders": 14373,
+    "originalTotalKm": "1007.6 km",
+    "baselineTotalKm": "947.0 km",
+    "netDistanceSavedKm": "60.7 km",
+    "netAnnualGrossSavingsRupees": "₹54,775",
+    "netAnnualSavingsRupees": "₹43,525",
+    "verdict": "Static Optimization Wins: Monthly re-slotting relocation costs outweigh extra travel savings."
+  },
+  "tspVerification": {
+    "status": "Verified Exact Match",
+    "ratio": "50 of 50 orders (100.0%)"
+  }
+}
