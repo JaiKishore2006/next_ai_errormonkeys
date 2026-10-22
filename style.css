@@ -1,0 +1,2 @@
+/* Re-export styles from src/style.css */
+@import './src/style.css';
