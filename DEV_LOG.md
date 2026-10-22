@@ -58,3 +58,29 @@
   - `monthly_demand.json`: 12-month demand frequency matrix.
 - Implemented and verified `src/engine/geometry.js` (symmetry, same-aisle, cross-aisle routing, dock distances) with 6 passing Vitest tests.
 - Entire pipeline runs reproducibly via `python data-pipeline/build_json.py` in ~30 seconds.
+
+### H+1:30 — Phase B2: Engine MVP & Optimization Core Complete
+- Implemented `src/engine/routing.js`:
+  - S-Shape (`sshape`): Full cross-aisle routing with odd-aisle front turnaround ($2 \cdot \max(z)$), returning coordinate waypoints matching polyline length.
+  - Return (`return`): In-and-out aisle picking from the front cross-aisle.
+  - Largest-gap (`largestgap`): Skips maximum gap between picks per aisle.
+  - Optimal (`optimal`): Exact bitmask DP TSP ($O(2^n \cdot n^2)$) for $\le 8$ items with heuristic fallback.
+- Implemented high-performance `src/engine/evaluate.js`:
+  - Evaluates 1,119 orders in **6 ms** (far exceeding the sub-50ms target).
+  - Accurately tracks `visitsBySlot` heatmap counts, walking seconds, and pick times ($12\text{ s}$/item).
+- Implemented `src/engine/optimizers.js`:
+  - `originalAssignment(products)`: unoptimized baseline layout from dataset.
+  - `isLegal(layout, product, slotId, rules)`: constraint enforcer (heavy on level 0, hazard in aisle 5, fragile in aisle 4).
+  - `baselineAssignment(layout, products)`: greedy fastest-movers nearest dock, 100% legal.
+  - `affinityAssignment(layout, products, pairs, rules)`: co-occurrence placement with localized swap optimization.
+  - `regret(layout, assignment, products)`: product displacement regret scoring.
+  - `bestMoves(layout, assignment, products, orders, n, rules)`: top $N$ distance-reducing legal swaps.
+- Implemented `src/engine/cost.js`:
+  - `costSummary(...)`: ROI, wage savings ($\text{₹}150/\text{hr}$), relocation costs ($\text{₹}250/\text{move}$), and payback period.
+  - `compareMethods(...)`: Benchmarking all 4 routing algorithms.
+  - `yearSummary(...)`: Full 12-month simulation comparing untouched vs player vs monthly re-optimization.
+- Central API entry point created in `src/engine/index.js` matching 100% of `docs/CONTRACTS.md`.
+- Expanded unit test suite (`tests/engine.test.js`) to 21 comprehensive tests:
+  - Verified polyline distance equals calculated distance.
+  - Verified baseline assignment decisively beats original unoptimized layout (75,146m vs 82,235m, saving 7,089 meters in month 2011-03 alone).
+  - Verified Vite production build (`npm run build`) compiles cleanly in $< 300\text{ ms}$.
