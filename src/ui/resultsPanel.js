@@ -3,10 +3,11 @@
  * 
  * Displays verified distances (Original, Player, Baseline), percentage savings,
  * remaining move budget, animated order simulation ("Run the Day" with Ghost Picker),
- * undo/reset controls, baseline adoption, and algorithmic suggested moves (Hints).
+ * undo/reset controls, baseline adoption, algorithmic suggested moves (Hints),
+ * and Level Clear progression & celebrations.
  */
 
-import { store } from '../state.js';
+import { store, LEVELS } from '../state.js';
 import { getRemainingMoves } from '../game/rules.js';
 import {
   playOrders,
@@ -27,6 +28,10 @@ export function renderResultsPanel(container) {
     const remainingStatus = getRemainingMoves(currentLevel, movesUsed);
     const progressPct = remainingStatus.limit ? Math.min(100, (movesUsed / remainingStatus.limit) * 100) : 0;
 
+    const targetPct = parseFloat(currentLevel.targetSavings) || 10;
+    const isTargetMet = metrics.savingsPct >= targetPct;
+    const nextLevelId = currentLevel.id < 5 ? currentLevel.id + 1 : null;
+
     const isPositiveSavings = metrics.savingsPct > 0;
     const savingsColorClass = isPositiveSavings ? 'text-emerald' : 'text-muted';
 
@@ -37,8 +42,8 @@ export function renderResultsPanel(container) {
             <span class="panel-icon" aria-hidden="true">📊</span>
             Optimization Metrics
           </h2>
-          <span class="badge ${metrics.isMockData ? 'badge-amber badge-subtle' : 'badge-emerald'}" title="Real retail engine distance metrics">
-            ${metrics.isMockData ? 'Mock Data' : '● Live Engine'}
+          <span class="badge ${isTargetMet ? 'badge-emerald' : metrics.isMockData ? 'badge-amber badge-subtle' : 'badge-slate'}" title="Real retail engine distance metrics">
+            ${isTargetMet ? '🏆 Target Met' : '● Live Engine'}
           </span>
         </div>
 
@@ -58,7 +63,7 @@ export function renderResultsPanel(container) {
             <div class="metric-value font-mono ${savingsColorClass}">
               ${isPositiveSavings ? '+' : ''}${metrics.savingsPct.toFixed(1)}%
             </div>
-            <div class="metric-subtext">vs. Unoptimized Original</div>
+            <div class="metric-subtext">Target: <strong>${currentLevel.targetSavings}</strong></div>
           </div>
 
           <!-- Comparison: Original & Baseline -->
@@ -105,6 +110,12 @@ export function renderResultsPanel(container) {
         </h2>
 
         <div class="action-buttons-stack">
+          ${isTargetMet && nextLevelId ? `
+            <button id="advance-level-btn" class="btn btn-amber btn-lg btn-block" style="background: linear-gradient(135deg, #10b981, #059669); border-color: #10b981; font-weight: 700; margin-bottom: 4px;" title="Target achieved! Advance to the next challenge">
+              <span>🏆 Target Met! Proceed to Level ${nextLevelId} ➔</span>
+            </button>
+          ` : ''}
+
           <button id="run-day-btn" class="btn btn-amber btn-lg btn-block" title="Simulate 3D picker walking aisles picking orders">
             <span class="btn-icon" aria-hidden="true">${isReplaying ? '⏹' : '▶'}</span>
             ${isReplaying ? 'Stop Simulation' : 'Run the Day (3D Picker)'}
@@ -147,6 +158,16 @@ export function renderResultsPanel(container) {
       </section>
     `;
 
+    // Advance Level Button
+    const advanceBtn = container.querySelector('#advance-level-btn');
+    if (advanceBtn && nextLevelId) {
+      advanceBtn.addEventListener('click', () => {
+        store.setLevel(nextLevelId);
+        triggerConfetti(80);
+        store.setUIStatus('ready', `Advanced to Level ${nextLevelId}: ${LEVELS[nextLevelId - 1].name}!`);
+      });
+    }
+
     // 1. Run the Day Handler
     const runBtn = container.querySelector('#run-day-btn');
     if (runBtn) {
@@ -188,9 +209,11 @@ export function renderResultsPanel(container) {
           ghostRoutes: ghostRoutes
         }).then(() => {
           isReplaying = false;
-          store.setUIStatus('ready', `Simulation completed! Twin verified.`);
-          if (metrics.savingsPct > 5) {
-            triggerConfetti(120);
+          if (isTargetMet) {
+            triggerConfetti(160);
+            showVictoryModal(currentLevel, metrics, movesUsed, nextLevelId);
+          } else {
+            store.setUIStatus('ready', `Simulation completed! Saved ${metrics.savingsPct.toFixed(1)}% (Target: ${currentLevel.targetSavings}).`);
           }
           update(store.getState());
         });
@@ -268,4 +291,65 @@ export function renderResultsPanel(container) {
 
   update(store.getState());
   store.subscribe(update);
+}
+
+function showVictoryModal(currentLevel, metrics, movesUsed, nextLevelId) {
+  const existing = document.querySelector('#victory-modal-root');
+  if (existing) existing.remove();
+
+  const modalRoot = document.createElement('div');
+  modalRoot.id = 'victory-modal-root';
+  modalRoot.innerHTML = `
+    <div class="banner-overlay" style="z-index: 3000;" role="dialog" aria-modal="true" aria-label="Level Complete Celebration">
+      <div style="background: #0f172a; border: 2px solid #f59e0b; border-radius: 16px; padding: 32px; max-width: 440px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.7); color: #f8fafc;">
+        <div style="font-size: 52px; margin-bottom: 6px;">🏆</div>
+        <div style="color: #f59e0b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px;">TARGET ACHIEVED!</div>
+        <h2 style="font-size: 22px; font-weight: 800; margin: 0 0 10px; color: #fff;">${currentLevel.name} Cleared!</h2>
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px; line-height: 1.5;">
+          You achieved <strong style="color: #10b981;">+${metrics.savingsPct.toFixed(1)}%</strong> distance reduction, beating the level target of <strong>${currentLevel.targetSavings}</strong>!
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; margin-bottom: 24px; text-align: left;">
+          <div>
+            <span style="color: #94a3b8; display: block; font-size: 10px; text-transform: uppercase; font-weight: 600;">Distance Saved</span>
+            <strong style="color: #10b981; font-size: 16px;">${Math.max(0, metrics.originalDistance - metrics.playerDistance).toFixed(1)} m</strong>
+          </div>
+          <div>
+            <span style="color: #94a3b8; display: block; font-size: 10px; text-transform: uppercase; font-weight: 600;">Moves Used</span>
+            <strong style="color: #f8fafc; font-size: 16px;">${movesUsed} ${currentLevel.moveLimit ? `/ ${currentLevel.moveLimit}` : 'moves'}</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button id="modal-stay-btn" class="btn btn-outline" style="flex: 1; padding: 10px 16px;">Stay & Optimize</button>
+          ${nextLevelId ? `
+            <button id="modal-next-btn" class="btn btn-amber" style="flex: 1; padding: 10px 16px; font-weight: 700; background: linear-gradient(135deg, #10b981, #059669); border-color: #10b981;">Proceed to Level ${nextLevelId} ➔</button>
+          ` : `
+            <button id="modal-close-btn" class="btn btn-amber" style="flex: 1; font-weight: 700;">All Levels Mastered! 👑</button>
+          `}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modalRoot);
+
+  const stayBtn = modalRoot.querySelector('#modal-stay-btn');
+  const nextBtn = modalRoot.querySelector('#modal-next-btn');
+  const closeBtn = modalRoot.querySelector('#modal-close-btn');
+
+  stayBtn?.addEventListener('click', () => {
+    modalRoot.remove();
+  });
+
+  closeBtn?.addEventListener('click', () => {
+    modalRoot.remove();
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    modalRoot.remove();
+    store.setLevel(nextLevelId);
+    triggerConfetti(80);
+    store.setUIStatus('ready', `Advanced to Level ${nextLevelId}: ${LEVELS[nextLevelId - 1].name}!`);
+  });
 }
