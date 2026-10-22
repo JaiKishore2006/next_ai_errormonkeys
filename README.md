@@ -43,6 +43,10 @@ documented when their implementations are integrated.
 
 [https://nextaierrormonkeys.vercel.app](https://nextaierrormonkeys.vercel.app)
 
+## Video Demo
+
+[https://youtu.be/oVHNvofZE24](https://youtu.be/oVHNvofZE24)
+
 ## Data Attribution and Licence
 
 Document the actual dataset source, attribution and applicable
